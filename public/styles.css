@@ -19,6 +19,7 @@ body {
 .wrapper {
   margin: 0 auto;
   max-width: 50%;
+  margin-bottom: 2rem;
 }
 
 .raleway {
@@ -39,6 +40,7 @@ body {
   animation: spin 0.8s linear infinite;
   margin: auto;
 }
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
