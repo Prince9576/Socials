@@ -6,9 +6,11 @@ import { Form, Button, Message, Segment, Divider } from "semantic-ui-react";
 import { useEffect, useRef, useState } from "react";
 import SocialLinks from "../components/Common/SocialLinks";
 import ImageDragger from "../components/Common/ImageDragger";
+import axios from "axios";
+import baseUrl from "../utils/baseUrl";
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
-
+let cancel;
 const Signup = () => {
   const [user, setUser] = useState({
     name: "",
@@ -45,6 +47,29 @@ const Signup = () => {
     );
     isValid ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
+
+  const checkUsername = async () => {
+    setUsernameLoading(true);
+    try {
+      cancel && cancel();
+      const response = await axios.get(`${baseUrl}/api/signup/${username}`, {
+        cancelToken: new axios.CancelToken((canceler) => {
+          cancel = canceler;
+        }),
+      });
+      if (response && response.data === "Available") {
+        setUsernameAvailable(true);
+        setUser((prev) => ({ ...prev, username }));
+      }
+    } catch (err) {
+      setUsernameAvailable(false);
+      setErrorMsg("Username not available");
+    }
+    setUsernameLoading(false);
+  };
+  useEffect(() => {
+    username === "" ? setUsernameAvailable(false) : checkUsername();
+  }, [username]);
   const inputChangeHandler = (event) => {
     const { name, value } = event.target;
     setUser((prevState) => {
