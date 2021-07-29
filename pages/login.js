@@ -4,6 +4,7 @@ import {
   FooterMessage,
 } from "../components/Common/WelcomeMessage";
 import { Form, Button, Message, Segment, Divider } from "semantic-ui-react";
+import { loginUser } from "../utils/authUser";
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -35,7 +36,11 @@ const Login = () => {
     });
   };
 
-  const handleFormSubmit = (event) => event.preventDefault();
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    setFormLoading(true);
+    await loginUser(user, setErrorMsg, setFormLoading);
+  };
 
   return (
     <div className="wrapper">
