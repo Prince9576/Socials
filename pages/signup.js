@@ -8,6 +8,8 @@ import SocialLinks from "../components/Common/SocialLinks";
 import ImageDragger from "../components/Common/ImageDragger";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
+import uploadPic from "../utils/uploadPicToCloudinary";
+import { signupUser } from "../utils/authUser";
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 let cancel;
@@ -82,7 +84,26 @@ const Signup = () => {
     setMedia(files[0]);
     setMediaPreview(URL.createObjectURL(files[0]));
   };
-  const handleFormSubmit = (event) => event.preventDefault();
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    setFormLoading(true);
+    let profilePictureUrl;
+    if (media !== null) {
+      profilePictureUrl = await uploadPic(media);
+    }
+    if (media !== null && !profilePictureUrl) {
+      setFormLoading(false);
+      setErrorMsg("Picture Upload Error");
+    }
+    console.log("User at signup", user, profilePictureUrl);
+    const response = await signupUser(
+      user,
+      profilePictureUrl,
+      setErrorMsg,
+      setFormLoading
+    );
+    console.log("User Registred", response);
+  };
   return (
     <div className="wrapper">
       <HeaderMessage />

@@ -57,10 +57,10 @@ router.post("/", async (req, res) => {
       username: username.toLowerCase(),
       profilePicUrl: req.body.profilePicUrl || userPng,
     });
-    user.password = bcrypt.hash(password, 10);
+    user.password = await bcrypt.hash(password, 10);
     await user.save();
 
-    let profileFields;
+    let profileFields = {};
     profileFields.user = user._id;
     profileFields.bio = bio;
     profileFields.social = {};
