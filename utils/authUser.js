@@ -24,6 +24,15 @@ export const signupUser = async (
   setLoading(false);
 };
 
+export const redirectUser = (ctx, location) => {
+  if (ctx.req) {
+    ctx.res.writeHead(302, { Location: location });
+    ctx.res.end();
+  } else {
+    Router.push(location);
+  }
+};
+
 export const loginUser = async (user, setErrorMsg, setLoading) => {
   try {
     const response = await axios.post(baseUrl + "/api/login", { user });
