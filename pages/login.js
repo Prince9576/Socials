@@ -5,6 +5,7 @@ import {
 } from "../components/Common/WelcomeMessage";
 import { Form, Button, Message, Segment, Divider } from "semantic-ui-react";
 import { loginUser } from "../utils/authUser";
+import cookie from "js-cookie";
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -27,6 +28,12 @@ const Login = () => {
     });
     isValid ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
+
+  useEffect(() => {
+    document.title = "Welcome Back";
+    const userEmail = cookie.get("userEmail");
+    if (userEmail) setUser((prevState) => ({ ...prevState, email: userEmail }));
+  }, []);
 
   const inputChangeHandler = (event) => {
     console.log("Added event form", event.target);

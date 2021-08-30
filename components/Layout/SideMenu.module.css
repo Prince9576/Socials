@@ -1,0 +1,9 @@
+.header {
+  font-family: "Raleway" !important;
+  font-weight: 600 !important;
+}
+.item {
+  padding: 1em 1.2em !important;
+  margin-bottom: 10px !important;
+  border-radius: 0 !important;
+}
