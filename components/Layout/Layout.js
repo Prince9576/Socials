@@ -11,6 +11,7 @@ import {
   Sticky,
 } from "semantic-ui-react";
 import SideMenu from "./SideMenu";
+import SearchComponent from "./Search";
 
 function Layout({ children, user }) {
   Router.onRouteChangeStart = () => nProgress.start();
@@ -32,7 +33,16 @@ function Layout({ children, user }) {
             </Grid.Column>
 
             <Grid.Column width={12}>
-              {user && <Visibility context={contextRef}>{children}</Visibility>}
+              {user && (
+                <Fragment>
+                  <Grid.Row>
+                    <SearchComponent />
+                  </Grid.Row>
+                  <Grid.Row>
+                    <Visibility context={contextRef}>{children}</Visibility>
+                  </Grid.Row>
+                </Fragment>
+              )}
               {!user && <div style={{ fontSize: "1.2rem" }}>{children}</div>}
             </Grid.Column>
           </Grid>
