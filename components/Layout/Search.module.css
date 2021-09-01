@@ -2,4 +2,29 @@
   padding: 12px;
   background-color: #f4f4f4;
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.avatar {
+  height: 4rem;
+  width: 4rem;
+  border-radius: 50%;
+}
+.search-wrapper input {
+  width: 350px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  width: 350px !important;
+}
+
+.listItem img {
+  margin-right: 1rem;
+}
+
+.listItem desc {
+  font-size: 1.2rem;
+  font-weight: 600;
 }

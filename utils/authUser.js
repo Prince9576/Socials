@@ -6,14 +6,15 @@ import cookie from "js-cookie";
 
 export const signupUser = async (
   user,
-  profilePictureUrl,
+  profilePicUrl,
   setErrorMsg,
   setLoading
 ) => {
   try {
+    console.log("profilePicUrl authUser", profilePicUrl);
     const response = await axios.post(baseUrl + "/api/signup", {
       user,
-      profilePictureUrl,
+      profilePicUrl,
     });
     if (response) {
       setToken(response.data);

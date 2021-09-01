@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Search } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Search, List, Image } from "semantic-ui-react";
 import axios from "axios";
 import baseUrl from "../../utils/baseUrl";
 import styles from "./Search.module.css";
@@ -9,11 +9,12 @@ let cancel;
 const SearchComponent = () => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([{}]);
 
   const handleChange = async (e) => {
     const { value } = e.target;
     setLoading(true);
+    if (value.length === 0) return setQuery(value);
     setQuery(value);
     try {
       cancel && cancel();
@@ -28,17 +29,35 @@ const SearchComponent = () => {
         // }),
       });
       if (results.data.length === 0) return setLoading(false);
-      console.log("Search Result", results);
-      setResults(results.data);
+      const mappedRes = results.data.map((result) => {
+        return {
+          _id: result._id,
+          profilePicUrl: result.profilePicUrl,
+          name: result.name,
+        };
+      });
+      console.log({ results, mappedRes });
+      setLoading(false);
+      setResults(mappedRes);
     } catch (err) {
       console.error("Error Searching", err);
     }
   };
 
+  useEffect(() => {
+    if (query.length === 0 && loading) setLoading(false);
+  }, [query]);
+
   return (
     <Search
       className={styles["search-wrapper"]}
-      onBlur={() => results.length > 0 && setResults([])}
+      aligned="right"
+      onBlur={() => {
+        if (results.length > 0) {
+          setQuery("");
+          setResults([]);
+        }
+      }}
       loading={loading}
       value={query}
       results={results}
@@ -52,9 +71,19 @@ const SearchComponent = () => {
   );
 };
 
-const ResultRenderer = (props) => {
-  console.log(props);
-  return <div></div>;
+const ResultRenderer = ({ _id, profilePicUrl, name }) => {
+  return (
+    <List key={_id}>
+      <div className={styles.listItem}>
+        <img
+          className={styles.avatar}
+          src={profilePicUrl}
+          alt="Profile Avatar"
+        />
+        <div className={styles.desc}>{name}</div>
+      </div>
+    </List>
+  );
 };
 
 export default SearchComponent;
