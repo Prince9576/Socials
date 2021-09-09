@@ -1,0 +1,48 @@
+.imagePreview {
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+  padding: 5px;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  box-shadow: 0 1px 2px 0 rgb(34 36 38 / 15%);
+  z-index: 5;
+}
+.imagePreviewBorder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  box-shadow: 0 1px 2px 0 rgb(34 36 38 / 15%);
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 0 auto;
+  position: relative;
+}
+.strikethrough {
+  width: 0;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: stretch 0.25s ease-in-out;
+  animation-fill-mode: forwards;
+}
+.animateImageWrapper {
+  animation: round 0.25s linear;
+  animation-fill-mode: forwards;
+}
+@keyframes stretch {
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes round {
+  100% {
+    box-shadow: none;
+    border: 1px solid white;
+  }
+}
