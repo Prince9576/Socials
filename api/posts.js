@@ -22,7 +22,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
     const post = await new PostModel(newPost).save();
 
-    return res.json(post);
+    return res.json(post._id);
   } catch (error) {
     console.error("Error Posting Post", error);
     return res.status(500).send("Internal Server Error");
@@ -181,7 +181,7 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
     await post.comments.unshift(newComment);
     await post.save();
 
-    return res.status(200).send("Comment added successfully");
+    return res.status(200).json({ id: newComment._id });
   } catch (error) {
     console.error("Error Posting Comment", error);
     return res.status(500).send("Internal Server Error");
@@ -205,7 +205,7 @@ router.delete(
       );
       if (!comment) return res.status(404).send("Comment Not Found");
 
-      const deleteComment = () => {
+      const deleteComment = async () => {
         const index = post.comments.map((c) => c._id).indexOf(comment._id);
         await post.comments.splice(index, 1);
         await post.save();
