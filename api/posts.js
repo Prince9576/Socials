@@ -84,4 +84,79 @@ router.delete("/:postId", authMiddleware, async (req, res) => {
   }
 });
 
+// LIKE A POST
+
+router.post("/like/:postId", authMiddleware, async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req;
+  try {
+    const post = await PostModel.findById(postId);
+    if (!post) return res.status(401).send("Post Not Found");
+
+    // Post already liked or not
+    const isLiked =
+      post.likes.filter((like) => {
+        return like.user.toString() === userId;
+      }).length > 0;
+
+    console.log("Is Liked", isLiked);
+
+    if (isLiked) return res.status(401).send("Post Already Liked");
+
+    await post.likes.unshift({ user: userId });
+    await post.save();
+
+    return res.status(200).send("Post Liked Successfully");
+  } catch (error) {
+    console.error("Error Liking Post", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// UNLIKE A POST
+
+router.put("/unlike/:postId", authMiddleware, async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req;
+  try {
+    const post = await PostModel.findById(postId);
+    if (!post) return res.status(401).send("Post Not Found");
+
+    // Post already liked or not
+    const notLiked =
+      post.likes.filter((like) => {
+        return like.user.toString() === userId;
+      }).length === 0;
+
+    console.log("Is Liked", notLiked);
+
+    if (notLiked) return res.status(401).send("Post Not Liked Before");
+
+    const index = post.likes
+      .map((like) => like.user.toString())
+      .indexOf(userId);
+    await post.likes.splice(index, 1);
+    await post.save();
+
+    return res.status(200).send("Post Unliked Successfully");
+  } catch (error) {
+    console.error("Error Liking Post", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// GET ALL LIKES
+router.get("/like/:postId", authMiddleware, async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const post = await PostModel.findById(postId).populate("likes.user");
+    if (!post) return res.status(401).send("Post Not Found");
+
+    res.status(200).json(post.likes);
+  } catch (error) {
+    console.error("Error Liking Post", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
 module.exports = router;
