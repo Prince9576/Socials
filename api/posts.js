@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const PostModel = require("../models/PostModel");
 const UserModel = require("../models/UserModel");
+const uuid = require("uuid").v4;
 
 // POST A POST
 router.post("/", authMiddleware, async (req, res) => {
@@ -158,5 +159,73 @@ router.get("/like/:postId", authMiddleware, async (req, res) => {
     return res.status(500).send("Internal Server Error");
   }
 });
+
+// POST A COMMENT
+
+router.post("/comment/:postId", authMiddleware, async (req, res) => {
+  const { postId } = req.params;
+  const { text } = req.body;
+  try {
+    if (text.length < 1)
+      return res.status(401).send("Comment Must be atleast 1 character long");
+    const post = await PostModel.findById(postId);
+    if (!post) return res.status(401).send("Post Not Found");
+
+    const newComment = {
+      _id: uuid(),
+      user: req.userId,
+      text,
+      date: Date.now(),
+    };
+
+    await post.comments.unshift(newComment);
+    await post.save();
+
+    return res.status(200).send("Comment added successfully");
+  } catch (error) {
+    console.error("Error Posting Comment", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// DELETE A COMMENT
+
+router.delete(
+  "/comment/:commentId/:postId",
+  authMiddleware,
+  async (req, res) => {
+    const { commentId, postId } = req.params;
+    const { userId } = req;
+    try {
+      const post = await PostModel.findById(postId);
+      if (!post) return res.status(401).send("Post Not Found");
+
+      const comment = post.comments.find(
+        (comment) => comment._id === commentId
+      );
+      if (!comment) return res.status(404).send("Comment Not Found");
+
+      const deleteComment = () => {
+        const index = post.comments.map((c) => c._id).indexOf(comment._id);
+        await post.comments.splice(index, 1);
+        await post.save();
+        return res.status(200).send("Comment Deleted Successfully");
+      };
+      const user = await UserModel.findById(userId);
+      if (comment.user.toString() !== userId) {
+        if (user.role === "root") {
+          deleteComment();
+        } else {
+          return res.status(401).send("Unauthorized");
+        }
+      }
+
+      deleteComment();
+    } catch (error) {
+      console.error("Error Deleting Comment", error);
+      return res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 module.exports = router;
