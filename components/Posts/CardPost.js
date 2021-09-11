@@ -86,6 +86,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                       comment={comment}
                       postId={post._id}
                       user={user}
+                      lastComment={i === comments.length - 1}
                       setComments={setComments}
                     />
                   )
