@@ -1,12 +1,14 @@
 import React, { Fragment, useRef, useState } from "react";
 import { Button, Form, Image, Message, Popup } from "semantic-ui-react";
-const CreatePost = ({ user, setPsots }) => {
+import uploadPic from "../../utils/uploadPicToCloudinary";
+import { submitNewPost } from "../../utils/postActions";
+const CreatePost = ({ user, setPosts }) => {
   const [newPost, setNewPost] = useState({ text: "", location: "" });
   const [loading, setLoading] = useState(false);
+  const [locationPopupClose, setLocationPopupClose] = useState();
   const inputRef = useRef();
 
   const [error, setError] = useState(null);
-  const [highlighted, setHighlighted] = useState(false);
 
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
@@ -24,7 +26,33 @@ const CreatePost = ({ user, setPsots }) => {
     setNewPost((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => e.preventDefault();
+  const handleSubmit = async (e) => {
+    console.log("Handle Submit Triggered", e);
+    e.preventDefault();
+    setLoading(true);
+    let picUrl;
+    if (media !== null) {
+      picUrl = await uploadPic(media);
+      if (!picUrl) {
+        setLoading(false);
+        return setError("Error Uploading Image");
+      }
+    }
+
+    await submitNewPost({
+      user,
+      text: newPost.text,
+      location: newPost.location,
+      picUrl,
+      setPosts,
+      setNewPost,
+      setError,
+    });
+
+    setMedia(null);
+    setMediaPreview(null);
+    setLoading(false);
+  };
 
   return (
     <Fragment>
@@ -76,6 +104,7 @@ const CreatePost = ({ user, setPsots }) => {
                   circular
                   size="small"
                   color="blue"
+                  type="button"
                 />
               }
             >
@@ -108,12 +137,15 @@ const CreatePost = ({ user, setPsots }) => {
             <Popup
               on="click"
               position="right center"
+              open={locationPopupClose}
               trigger={
                 <Button
                   icon="map marker alternate"
                   circular
                   size="small"
                   color="orange"
+                  type="button"
+                  onClick={() => setLocationPopupClose((prev) => !prev)}
                 />
               }
             >
@@ -132,11 +164,21 @@ const CreatePost = ({ user, setPsots }) => {
                   size="mini"
                   icon="arrow right"
                   color="blue"
+                  type="button"
+                  onClick={() => setLocationPopupClose(false)}
                 ></Button>
               </Form.Group>
             </Popup>
 
-            <Button icon="send" circular size="small" color="green" />
+            <Button
+              loading={loading}
+              icon="send"
+              type="submit"
+              circular
+              size="small"
+              color="green"
+              disabled={newPost.text === "" || loading}
+            />
           </div>
         </Form.Group>
       </Form>

@@ -1,7 +1,4 @@
 .search-wrapper {
-  padding: 9px;
-  background-color: #f4f4f4;
-  margin-bottom: 2rem;
   display: flex;
   justify-content: flex-end;
 }
@@ -11,8 +8,10 @@
   border-radius: 50%;
 }
 .search-wrapper input {
-  width: 350px;
+  width: 15rem;
   padding: 5px !important;
+  border: 0 !important;
+  padding-left: 1rem !important;
 }
 
 .listItem {

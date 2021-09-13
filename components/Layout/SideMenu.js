@@ -26,7 +26,7 @@ const SideMenu = (props) => {
                 <Icon
                   name="home"
                   size="large"
-                  color={isActive("/") && "teal"}
+                  color={isActive("/") && "blue"}
                 />
                 <List.Content>
                   <List.Header
@@ -42,7 +42,7 @@ const SideMenu = (props) => {
                   name={unreadMessage ? "hand point right" : "mail outline"}
                   size="large"
                   color={
-                    (isActive("/messages") && "teal") ||
+                    (isActive("/messages") && "blue") ||
                     (unreadMessage && "orange")
                   }
                 />
@@ -65,7 +65,7 @@ const SideMenu = (props) => {
                   }
                   size="large"
                   color={
-                    (isActive("/notifications") && "teal") ||
+                    (isActive("/notifications") && "blue") ||
                     (unreadNotification && "orange")
                   }
                 />
@@ -85,7 +85,7 @@ const SideMenu = (props) => {
                 <Icon
                   name="user"
                   size="large"
-                  color={router.query.username === username && "teal"}
+                  color={router.query.username === username && "blue"}
                 />
                 <List.Content>
                   <List.Header
@@ -119,7 +119,7 @@ const SideMenu = (props) => {
                 <Icon
                   name="signup"
                   size="large"
-                  color={isActive("/signup") && "teal"}
+                  color={isActive("/signup") && "blue"}
                 />
                 <List.Content>
                   <List.Header
@@ -134,7 +134,7 @@ const SideMenu = (props) => {
                 <Icon
                   name="sign in"
                   size="large"
-                  color={isActive("/login") && "teal"}
+                  color={isActive("/login") && "blue"}
                 />
                 <List.Content>
                   <List.Header

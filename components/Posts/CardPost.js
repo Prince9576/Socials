@@ -22,7 +22,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
           {post.picUrl && (
             <Image
               src={post.picUrl}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", padding: "5px" }}
               floated="left"
               wrapped
               ui={false}
@@ -34,7 +34,11 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
             <Image src={user.profilePicUrl} floated="left" avatar circular />
             {(user.role === "root" || post.user._id === user._id) && (
               <Image floated="right">
-                <Icon color="red" name="trash alternate outline" />{" "}
+                <Icon
+                  color="red"
+                  style={{ cursor: "pointer" }}
+                  name="trash alternate outline"
+                />{" "}
               </Image>
             )}
             <Card.Header>

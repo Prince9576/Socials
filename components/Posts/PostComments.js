@@ -11,7 +11,12 @@ const PostComments = ({ comment, postId, user, setComments, lastComment }) => {
           <Comment.Avatar src={comment.user.profilePicUrl} />
           {(user.role === "root" || comment.user._id === user._id) && (
             <Image floated="right">
-              <Icon name="trash alternate" color="red" disabled={disabled} />{" "}
+              <Icon
+                name="trash alternate"
+                style={{ cursor: "pointer" }}
+                color="red"
+                disabled={disabled}
+              />{" "}
             </Image>
           )}
           <Comment.Content>
