@@ -61,8 +61,11 @@ router.get("/:postId", authMiddleware, async (req, res) => {
 router.delete("/:postId", authMiddleware, async (req, res) => {
   const { userId } = req;
   const { postId } = req.params;
+
+  console.log("Deleting", postId);
   try {
     const post = await PostModel.findById(postId);
+    console.log("Deleting Post", post);
     if (!post) return res.status(401).send("Post Not Found");
 
     const user = await UserModel.findById(userId);
@@ -87,7 +90,7 @@ router.delete("/:postId", authMiddleware, async (req, res) => {
 
 // LIKE A POST
 
-router.post("/like/:postId", authMiddleware, async (req, res) => {
+router.put("/like/:postId", authMiddleware, async (req, res) => {
   const { postId } = req.params;
   const { userId } = req;
   try {

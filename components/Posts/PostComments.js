@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { Comment, Divider, Icon, Image } from "semantic-ui-react";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
+import { deleteComment } from "../../utils/postActions";
 
 const PostComments = ({ comment, postId, user, setComments, lastComment }) => {
   const [disabled, setDisabled] = useState(false);
@@ -16,6 +17,16 @@ const PostComments = ({ comment, postId, user, setComments, lastComment }) => {
                 style={{ cursor: "pointer" }}
                 color="red"
                 disabled={disabled}
+                onClick={async () => {
+                  setDisabled(true);
+                  await deleteComment({
+                    postId,
+                    commentId: comment._id,
+                    user,
+                    setComments,
+                  });
+                  setDisabled(false);
+                }}
               />{" "}
             </Image>
           )}

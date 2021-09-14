@@ -5,9 +5,10 @@ import styles from "./CardPost.module.css";
 import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputFields";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
+import { deletePost, likePost } from "../../utils/postActions";
 
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
-  console.log({ post, user, pu: post.user });
+  console.log("CardPost", { post });
   const [likes, setLikes] = useState(post.likes);
   const [comments, setComments] = useState(post.comments);
   const isLiked =
@@ -38,6 +39,13 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                   color="red"
                   style={{ cursor: "pointer" }}
                   name="trash alternate outline"
+                  onClick={() =>
+                    deletePost({
+                      postId: post._id,
+                      setPosts,
+                      setShowToastr,
+                    })
+                  }
                 />{" "}
               </Image>
             )}
@@ -67,6 +75,14 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                 name={isLiked ? "heart" : "heart outline"}
                 color="red"
                 style={{ cursor: "pointer" }}
+                onClick={() =>
+                  likePost({
+                    postId: post._id,
+                    userId: user._id,
+                    setLikes,
+                    like: isLiked ? false : true,
+                  })
+                }
               />
               {likes.length > 0 && (
                 <span className={styles.spanLikesList}>
@@ -97,7 +113,13 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               )}
 
             {comments.length > 3 && (
-              <Button content="View More" color="blue" circular basic />
+              <Button
+                content="View More"
+                color="blue"
+                circular
+                basic
+                size="tiny"
+              />
             )}
 
             <Divider hidden />
