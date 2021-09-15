@@ -1,5 +1,13 @@
 import React, { Fragment, useState } from "react";
-import { Button, Card, Divider, Icon, Image, Segment } from "semantic-ui-react";
+import {
+  Button,
+  Card,
+  Divider,
+  Icon,
+  Image,
+  Modal,
+  Segment,
+} from "semantic-ui-react";
 import Link from "next/link";
 import styles from "./CardPost.module.css";
 import PostComments from "./PostComments";
@@ -7,11 +15,13 @@ import CommentInputField from "./CommentInputFields";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
 import { deletePost, likePost } from "../../utils/postActions";
 import LikesList from "./LikesList";
-
+import ImageModal from "./ImageModal";
+import NoImageModal from "./NoImageModal";
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   console.log("CardPost", { post });
   const [likes, setLikes] = useState(post.likes);
   const [comments, setComments] = useState(post.comments);
+  const [showModal, setShowModal] = useState(false);
   const isLiked =
     likes.length > 0 &&
     likes.filter((like) => like.user === user._id).length > 0;
@@ -19,6 +29,26 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   const [error, setError] = useState(null);
   return (
     <Fragment>
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        closeIcon
+        closeOnDimmerClick
+        style={{
+          width: !post.picUrl && "35%",
+        }}
+      >
+        <ImageModal
+          post={post}
+          user={user}
+          likes={likes}
+          setLikes={setLikes}
+          isLiked={isLiked}
+          comments={comments}
+          setComments={setComments}
+          imageAvailable={post.picUrl}
+        />
+      </Modal>
       <Segment basic>
         <Card color="teal" fluid>
           {post.picUrl && (
@@ -29,6 +59,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               wrapped
               ui={false}
               alt="PostImage"
+              onClick={() => setShowModal(true)}
             />
           )}
 
@@ -125,6 +156,9 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                 circular
                 basic
                 size="tiny"
+                onClick={() => {
+                  setShowModal(true);
+                }}
               />
             )}
 

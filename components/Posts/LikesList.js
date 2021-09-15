@@ -46,6 +46,7 @@ const LikesList = ({ postId, trigger }) => {
       trigger={trigger}
       popperDependencies={[likesList]}
       wide
+      position="bottom left"
     >
       {loading && placeHolderMarkup.map((holder) => holder)}
       {!loading && likesList.length > 0 && (
