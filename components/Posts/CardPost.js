@@ -6,6 +6,7 @@ import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputFields";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
 import { deletePost, likePost } from "../../utils/postActions";
+import LikesList from "./LikesList";
 
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   console.log("CardPost", { post });
@@ -84,11 +85,16 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                   })
                 }
               />
-              {likes.length > 0 && (
-                <span className={styles.spanLikesList}>
-                  {`${likes.length} ${likes.length > 1 ? "likes" : "like"}`}
-                </span>
-              )}
+              <LikesList
+                postId={post._id}
+                trigger={
+                  likes.length > 0 && (
+                    <span className={styles.spanLikesList}>
+                      {`${likes.length} ${likes.length > 1 ? "likes" : "like"}`}
+                    </span>
+                  )
+                }
+              />
             </div>
 
             <Icon
