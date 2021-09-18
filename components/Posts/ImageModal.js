@@ -116,6 +116,7 @@ const ImageModal = ({
                   overflow: "auto",
                   maxHeight: "12rem",
                   marginBottom: "2rem",
+                  scrollbarWidth: "5px",
                 }}
               >
                 {comments.map(

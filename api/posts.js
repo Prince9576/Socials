@@ -31,11 +31,27 @@ router.post("/", authMiddleware, async (req, res) => {
 
 //GET ALL POSTS
 router.get("/", authMiddleware, async (req, res) => {
+  let { pageNumber } = req.query;
+  pageNumber = Number(pageNumber);
+  const size = 8;
   try {
-    const posts = await PostModel.find()
-      .sort({ createdAt: -1 })
-      .populate("user")
-      .populate("comments.user");
+    let posts;
+    if (pageNumber === 1) {
+      posts = await PostModel.find()
+        .limit(size)
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .populate("comments.user");
+    } else {
+      const skips = size * (pageNumber - 1);
+      posts = await PostModel.find()
+        .skip(skips)
+        .limit(size)
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .populate("comments.user");
+    }
+
     return res.json(posts);
   } catch (error) {
     console.error("Error Getting Posts", error);

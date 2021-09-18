@@ -16,6 +16,7 @@ nextApp.prepare().then(() => {
   app.use("/api/login", require("./api/login"));
   app.use("/api/search", require("./api/search"));
   app.use("/api/posts", require("./api/posts"));
+  app.use("/api/profile", require("./api/profile"));
   app.all("*", (req, res) => handle(req, res));
   server.listen(PORT, (err) => {
     if (err) throw err;

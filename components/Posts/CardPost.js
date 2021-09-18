@@ -16,7 +16,7 @@ import calculateTimeDiff from "../../utils/calculateTimeDiff";
 import { deletePost, likePost } from "../../utils/postActions";
 import LikesList from "./LikesList";
 import ImageModal from "./ImageModal";
-import NoImageModal from "./NoImageModal";
+
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   console.log("CardPost", { post });
   const [likes, setLikes] = useState(post.likes);
