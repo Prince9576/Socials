@@ -80,4 +80,71 @@ router.get("/following/:userId", authMiddleware, async (req, res) => {
   }
 });
 
+// FOLLOW A USER
+router.post("/follow/:userIdToFollow", authMiddleware, async (req, res) => {
+  const { userId } = req;
+  const { userIdToFollow } = req.params;
+
+  const user = await FollowerModel.findOne({ user: userId });
+  const userToFollow = await FollowerModel.findOne({ user: userIdToFollow });
+
+  if (!user || !userToFollow) return res.status(404).send("Not Found");
+
+  // Check If User is Already Following
+  const isFollowing =
+    user.following.length > 0 &&
+    user.following.filter(
+      (following) => following.user.toString() === userIdToFollow
+    ).length > 0;
+
+  if (isFollowing) {
+    return res.status(401).send("User already following");
+  }
+
+  await user.following.unshift({ user: userIdToFollow });
+  await user.save();
+
+  await userToFollow.followers.unshift({ user: user });
+  await userToFollow.save();
+
+  return res.status(200).send("Successfully Followed");
+});
+
+// UNFOLLOW A USER
+router.post("/unfollow/:userIdToUnfollow", authMiddleware, async (req, res) => {
+  const { userId } = req;
+  const { userIdToUnfollow } = req.params;
+
+  const user = await FollowerModel.findOne({ user: userId });
+  const userToUnfollow = await FollowerModel.findOne({
+    user: userIdToUnfollow,
+  });
+
+  if (!user || !userToUnfollow) return res.status(404).send("Not Found");
+
+  // Check If User is even Following or not
+  const isFollowing =
+    user.following.length > 0 &&
+    user.following.filter(
+      (following) => following.user.toString() === userIdToUnfollow
+    ).length > 0;
+
+  if (isFollowing) {
+    return res.status(401).send("User not following");
+  }
+
+  const followingIndex = user.following
+    .map((following) => following.user.toString())
+    .indexOf(userIdToUnfollow);
+  await user.following.splice(followingIndex, 1);
+  await user.save();
+
+  const followerIndex = userToUnfollow.followers
+    .map((followers) => followers.user.toString())
+    .indexOf(userId);
+  await userIdToUnfollow.followers.splice(followerIndex, 1);
+  await userToFollow.save();
+  return res.status(200).send("Successfully Unfollowed");
+});
+
 module.exports = router;
