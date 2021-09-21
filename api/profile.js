@@ -5,6 +5,7 @@ const UserModel = require("../models/UserModel");
 const ProfileModel = require("../models/ProfileModel");
 const FollowerModel = require("../models/FollowerModel");
 const PostModel = require("../models/PostModel");
+const bcrypt = require("bcryptjs");
 
 // GET PROFILE INFO
 router.get("/:username", authMiddleware, async (req, res) => {
@@ -56,9 +57,12 @@ router.get("/posts/:username", authMiddleware, async (req, res) => {
 router.get("/followers/:userId", authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = FollowerModel.findOne({ user: userId }).populate(
-      "followers.user"
-    );
+    console.log("Followers", userId);
+    const user = await FollowerModel.findOne({ user: userId }).populate({
+      path: "followers.user",
+      model: UserModel,
+    });
+    console.log("User", user);
     res.status(200).json(user.followers);
   } catch (error) {
     console.error("Error fetching Followers", error);
@@ -70,9 +74,10 @@ router.get("/followers/:userId", authMiddleware, async (req, res) => {
 router.get("/following/:userId", authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = FollowerModel.findOne({ user: userId }).populate(
-      "following.user"
-    );
+    const user = await FollowerModel.findOne({ user: userId }).populate({
+      path: "following.user",
+      model: UserModel,
+    });
     res.status(200).json(user.following);
   } catch (error) {
     console.error("Error fetching Followers", error);
@@ -104,7 +109,7 @@ router.post("/follow/:userIdToFollow", authMiddleware, async (req, res) => {
   await user.following.unshift({ user: userIdToFollow });
   await user.save();
 
-  await userToFollow.followers.unshift({ user: user });
+  await userToFollow.followers.unshift({ user: userId });
   await userToFollow.save();
 
   return res.status(200).send("Successfully Followed");
@@ -115,36 +120,119 @@ router.post("/unfollow/:userIdToUnfollow", authMiddleware, async (req, res) => {
   const { userId } = req;
   const { userIdToUnfollow } = req.params;
 
-  const user = await FollowerModel.findOne({ user: userId });
-  const userToUnfollow = await FollowerModel.findOne({
-    user: userIdToUnfollow,
-  });
+  try {
+    const user = await FollowerModel.findOne({ user: userId });
+    const userToUnfollow = await FollowerModel.findOne({
+      user: userIdToUnfollow,
+    });
+    // console.log({ user: user, userIdToUnFollow: userToUnfollow });
 
-  if (!user || !userToUnfollow) return res.status(404).send("Not Found");
+    if (!user || !userToUnfollow) return res.status(404).send("Not Found");
 
-  // Check If User is even Following or not
-  const isFollowing =
-    user.following.length > 0 &&
-    user.following.filter(
-      (following) => following.user.toString() === userIdToUnfollow
-    ).length > 0;
+    // Check If User is even Following or not
+    const isFollowing =
+      user.following.length > 0 &&
+      user.following.filter(
+        (following) => following.user.toString() === userIdToUnfollow
+      ).length === 0;
 
-  if (isFollowing) {
-    return res.status(401).send("User not following");
+    if (isFollowing) {
+      return res.status(401).send("User not following");
+    }
+
+    // console.log({ user, following: user.following });
+
+    const followingIndex = user.following
+      .map((following) => following.user.toString())
+      .indexOf(userIdToUnfollow);
+    await user.following.splice(followingIndex, 1);
+    await user.save();
+
+    console.log({ userToUnfollow, followers: userToUnfollow.followers });
+
+    const followerIndex = userToUnfollow.followers
+      .map((followers) => followers.user.toString())
+      .indexOf(userId);
+    await userToUnfollow.followers.splice(followerIndex, 1);
+    await userToUnfollow.save();
+    return res.status(200).send("Successfully Unfollowed");
+  } catch (error) {
+    console.error("Error Unfollowing", error);
+    return res.status(500).send("Internal Server Error");
   }
+});
 
-  const followingIndex = user.following
-    .map((following) => following.user.toString())
-    .indexOf(userIdToUnfollow);
-  await user.following.splice(followingIndex, 1);
-  await user.save();
+router.post("/upadte", authMiddleware, async (req, res) => {
+  try {
+    const { userId } = req;
+    const { bio, instagram, facebook, youtube, twitter, profilePicUrl } =
+      req.body.user;
 
-  const followerIndex = userToUnfollow.followers
-    .map((followers) => followers.user.toString())
-    .indexOf(userId);
-  await userIdToUnfollow.followers.splice(followerIndex, 1);
-  await userToFollow.save();
-  return res.status(200).send("Successfully Unfollowed");
+    let profileFields = {};
+    profileFields.user = userId;
+    profileFields.bio = bio;
+    profileFields.social = {};
+    if (facebook) profileFields.social.facebook = facebook;
+    if (youtube) profileFields.social.youtube = youtube;
+    if (instagram) profileFields.social.instagram = instagram;
+    if (twitter) profileFields.social.twitter = twitter;
+
+    await ProfileModel.findOneAndUpdate(
+      { user: userId },
+      { $set: profileFields },
+      { new: true }
+    );
+    if (profilePicUrl) {
+      const user = await UserModel.findById(userId);
+      user.profilePicUrl = profilePicUrl;
+      await user.save();
+    }
+
+    res.status(200).send("Profile Updated");
+  } catch (error) {
+    console.error("Error Updating Profile", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// UPDATE PASSWORD
+router.post("/settings/password", authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (newPassword.length < 6)
+      return res.status(401).send("Password must be 6 characters long");
+
+    const user = await UserModel.findById(req.userId).select("+password");
+    const isPassword = bcrypt.compare(currentPassword, user.password);
+    if (!isPassword) {
+      return res.status(401).send("Incorrect Password");
+    }
+
+    user.password = bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    return res.status(200).send("Password Updated");
+  } catch (error) {
+    console.error("Error Updating Password", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// UPDATE MESSAGE POPUP SETTINGS
+router.post("/settings/messagePopup", authMiddleware, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+    if (user.newMessagePopup) {
+      user.newMessagePopup = false;
+      await user.save();
+    } else {
+      user.newMessagePopup = true;
+      await user.save();
+    }
+  } catch (error) {
+    console.error("Error Updating Message Popup", error);
+    return res.status(500).send("Internal Server Error");
+  }
 });
 
 module.exports = router;
