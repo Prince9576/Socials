@@ -1,0 +1,16 @@
+.profile {
+  height: 18rem;
+  padding: 5px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+.cover {
+  position: relative;
+}
+.dp {
+  position: absolute;
+  bottom: 0;
+  left: 2rem;
+  transform: translateY(45%);
+  border: 4px solid white;
+}

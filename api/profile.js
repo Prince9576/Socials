@@ -24,7 +24,7 @@ router.get("/:username", authMiddleware, async (req, res) => {
       profile,
       followingLength:
         followerStats.following.length > 0 ? followerStats.following.length : 0,
-      followerLength:
+      followersLength:
         followerStats.followers.length > 0 ? followerStats.followers.length : 0,
     });
   } catch (error) {
@@ -34,7 +34,6 @@ router.get("/:username", authMiddleware, async (req, res) => {
 });
 
 // GET ALL POSTS OF A USER
-
 router.get("/posts/:username", authMiddleware, async (req, res) => {
   try {
     const { username } = req.params;
