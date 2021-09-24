@@ -49,7 +49,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
       }
 
       pageProps.user = user;
-      pageProps.followerStats = followerStats;
+      pageProps.userFollowStats = followerStats;
     } catch (err) {
       console.log("Error block", err);
       destroyCookie(ctx, "token");

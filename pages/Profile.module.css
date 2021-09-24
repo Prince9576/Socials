@@ -8,9 +8,35 @@
   position: relative;
 }
 .dp {
-  position: absolute;
+  position: absolute !important;
   bottom: 0;
-  left: 2rem;
-  transform: translateY(45%);
-  border: 4px solid white;
+  left: 2.5rem;
+  transform: translateY(65%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 12.5rem;
+}
+
+.info-container {
+  margin-left: 13rem;
+  padding-top: 12px;
+  padding-right: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-container .name {
+  font-size: 1.6rem;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  color: #343434;
+}
+.socials {
+  width: 25%;
+  display: flex;
+  justify-content: space-between;
+}
+.socials .icon {
+  font-size: 1.2rem;
 }

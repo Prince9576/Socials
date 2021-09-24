@@ -4,7 +4,7 @@ import styles from "./Profile.module.css";
 import { parseCookies } from "nookies";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
-import { Grid, Image } from "semantic-ui-react";
+import { Button, Grid, Icon, Image } from "semantic-ui-react";
 import Cookies from "js-cookie";
 import ProfileMenuTabs from "../components/Profile/ProfileMenuTabs";
 
@@ -25,7 +25,14 @@ const ProfilePage = ({
     useState(userFollowStats);
   const handleItemClick = (item) => setActiveItem(item);
 
-  const ownAccount = profile.user_id === user._id;
+  console.log({ user, profile });
+
+  const ownAccount = profile.user._id === user._id;
+  const isFollowing =
+    loggedUserFollowStats.following.length > 0 &&
+    loggedUserFollowStats.following.filter(
+      (following) => following.user === profile.user._id
+    ).length > 0;
 
   useEffect(() => {
     const getPosts = async () => {
@@ -75,16 +82,42 @@ const ProfilePage = ({
             }}
             src="https://newevolutiondesigns.com/images/freebies/rainbow-facebook-cover-1.jpg"
           />
-          <Image
-            className={styles.dp}
-            size="tiny"
-            circular
-            src={user.profilePicUrl}
-            style={{
-              bottom: "0",
-              position: "absolute",
-            }}
-          />
+          <div className={styles.dp}>
+            <Image
+              style={{
+                border: "4px solid white",
+                height: "130px",
+                width: "130px",
+              }}
+              circular
+              src={profile.user.profilePicUrl}
+            />
+            <Button
+              size="mini"
+              fluid
+              color="blue"
+              content={isFollowing ? "Following" : "Follow"}
+              icon={isFollowing ? "check circle" : "add user"}
+              color={isFollowing ? "instagram" : "twitter"}
+            />
+          </div>
+        </div>
+        <div className={styles["info-container"]}>
+          <div className={styles.name}>{profile.user.name}</div>
+          <div className={styles.socials}>
+            <Icon
+              name="facebook"
+              className={styles.icon}
+              style={{ color: "#3b5998" }}
+            />
+            <Icon name="youtube" className={styles.icon} color="red" />
+            <Icon name="twitter" className={styles.icon} color="blue" />
+            <Icon
+              name="instagram"
+              className={styles.icon}
+              style={{ color: "#8a3ab9" }}
+            />
+          </div>
         </div>
       </div>
       <Grid stackable>
