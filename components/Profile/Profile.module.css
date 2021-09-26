@@ -22,8 +22,6 @@
   margin-left: 13rem;
   padding-top: 12px;
   padding-right: 5px;
-  display: flex;
-  justify-content: space-between;
 }
 
 .info-container .name {
@@ -39,4 +37,17 @@
 }
 .socials .icon {
   font-size: 1.2rem;
+}
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.menu-tab-label {
+  margin-top: 3px !important;
+  margin-left: 5px !important;
+}
+.menu-tab-item {
+  margin-left: 5px !important;
+  min-height: 36px !important;
 }

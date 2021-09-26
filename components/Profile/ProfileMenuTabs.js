@@ -1,5 +1,6 @@
 import React from "react";
 import { Label, Menu } from "semantic-ui-react";
+import styles from "./Profile.module.css";
 
 const ProfileMenuTabs = ({
   activeItem,
@@ -10,14 +11,7 @@ const ProfileMenuTabs = ({
   loggedUserFollowStats,
 }) => {
   console.log({ loggedUserFollowStats, ownAccount });
-  const menuItemStyle = {
-    marginLeft: "5px !important",
-    minHeight: "36px",
-  };
-  const labelStyle = {
-    marginTop: "3px",
-    marginLeft: "5px !important",
-  };
+
   const getFollowers = () => {
     return loggedUserFollowStats.followers.length > 0
       ? loggedUserFollowStats.followers.length
@@ -49,7 +43,8 @@ const ProfileMenuTabs = ({
         icon="file alternate"
         active={activeItem === "posts"}
         onClick={() => handleItemClick("posts")}
-        style={menuItemStyle}
+        className={styles["menu-tab-item"]}
+        style={{ marginLeft: "5px !important" }}
       />
 
       {ownAccount ? (
@@ -57,20 +52,22 @@ const ProfileMenuTabs = ({
           <Menu.Item
             active={activeItem === "followers"}
             onClick={() => handleItemClick("followers")}
-            style={menuItemStyle}
+            className={styles["menu-tab-item"]}
+            style={{ marginLeft: "5px !important" }}
           >
             Followers
-            <Label size="mini" style={labelStyle}>
+            <Label size="mini" className={styles["menu-tab-label"]}>
               {getFollowers()}
             </Label>
           </Menu.Item>
           <Menu.Item
             active={activeItem === "following"}
             onClick={() => handleItemClick("following")}
-            style={menuItemStyle}
+            className={styles["menu-tab-item"]}
+            style={{ marginLeft: "5px !important" }}
           >
             Following
-            <Label size="mini" style={labelStyle}>
+            <Label size="mini" className={styles["menu-tab-label"]}>
               {getFollowing()}
             </Label>
           </Menu.Item>
@@ -80,20 +77,22 @@ const ProfileMenuTabs = ({
           <Menu.Item
             active={activeItem === "followers"}
             onClick={() => handleItemClick("followers")}
-            style={menuItemStyle}
+            className={styles["menu-tab-item"]}
+            style={{ marginLeft: "5px !important" }}
           >
             Followers
-            <Label size="mini" style={labelStyle}>
+            <Label size="mini" className={styles["menu-tab-label"]}>
               {followersLength}
             </Label>
           </Menu.Item>
           <Menu.Item
             active={activeItem === "following"}
             onClick={() => handleItemClick("following")}
-            style={menuItemStyle}
+            className={styles["menu-tab-item"]}
+            style={{ marginLeft: "5px !important" }}
           >
             Following
-            <Label size="mini" style={labelStyle}>
+            <Label size="mini" className={styles["menu-tab-label"]}>
               {followingLength}
             </Label>
           </Menu.Item>
@@ -107,14 +106,16 @@ const ProfileMenuTabs = ({
             name="Update"
             active={activeItem === "update"}
             onClick={() => handleItemClick("update")}
-            style={menuItemStyle}
+            className={styles["menu-tab-item"]}
+            style={{ marginLeft: "5px !important" }}
           />
           <Menu.Item
             icon="setting alternate"
             name="Settings"
             active={activeItem === "settings"}
             onClick={() => handleItemClick("settings")}
-            style={menuItemStyle}
+            className={styles["menu-tab-item"]}
+            style={{ marginLeft: "5px !important" }}
           />
         </>
       )}

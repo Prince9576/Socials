@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import styles from "./Profile.module.css";
+
 import { parseCookies } from "nookies";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
-import { Button, Grid, Icon, Image } from "semantic-ui-react";
+import { Grid, Image } from "semantic-ui-react";
 import Cookies from "js-cookie";
 import ProfileMenuTabs from "../components/Profile/ProfileMenuTabs";
+import ProfileHeader from "../components/Profile/ProfileHeader";
+import { PlaceHolderPosts } from "../components/Layout/PlaceHolderGroup";
+import CardPost from "../components/Posts/CardPost";
+import MessageToastr from "../components/Common/MessageToastr";
+import { NoPosts } from "../components/Layout/NoData";
+import Followers from "../components/Profile/Followers";
 
 const ProfilePage = ({
   errorLoading,
@@ -19,6 +25,7 @@ const ProfilePage = ({
   const route = useRouter();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showToastr, setShowToastr] = useState({ show: false, type: "" });
 
   const [activeItem, setActiveItem] = useState("posts");
   const [loggedUserFollowStats, setLoggedUserFollowStats] =
@@ -56,7 +63,16 @@ const ProfilePage = ({
     };
 
     getPosts();
-  }, []);
+  }, [route.query.username]);
+
+  useEffect(() => {
+    if (showToastr) {
+      setTimeout(() => {
+        setShowToastr(false);
+      }, 3000);
+    }
+  }, [showToastr]);
+
   console.log("Route", route);
   if (errorLoading)
     return (
@@ -70,56 +86,11 @@ const ProfilePage = ({
     );
   return (
     <div>
-      <div className={styles.profile}>
-        <div className={styles.cover}>
-          <img
-            style={{
-              width: "100%",
-              height: "8rem",
-              objectFit: "cover",
-              borderTopLeftRadius: "5px",
-              borderTopRightRadius: "5px",
-            }}
-            src="https://newevolutiondesigns.com/images/freebies/rainbow-facebook-cover-1.jpg"
-          />
-          <div className={styles.dp}>
-            <Image
-              style={{
-                border: "4px solid white",
-                height: "130px",
-                width: "130px",
-              }}
-              circular
-              src={profile.user.profilePicUrl}
-            />
-            <Button
-              size="mini"
-              fluid
-              color="blue"
-              content={isFollowing ? "Following" : "Follow"}
-              icon={isFollowing ? "check circle" : "add user"}
-              color={isFollowing ? "instagram" : "twitter"}
-            />
-          </div>
-        </div>
-        <div className={styles["info-container"]}>
-          <div className={styles.name}>{profile.user.name}</div>
-          <div className={styles.socials}>
-            <Icon
-              name="facebook"
-              className={styles.icon}
-              style={{ color: "#3b5998" }}
-            />
-            <Icon name="youtube" className={styles.icon} color="red" />
-            <Icon name="twitter" className={styles.icon} color="blue" />
-            <Icon
-              name="instagram"
-              className={styles.icon}
-              style={{ color: "#8a3ab9" }}
-            />
-          </div>
-        </div>
-      </div>
+      <ProfileHeader
+        profile={profile}
+        isFollowing={isFollowing}
+        loading={loading}
+      />
       <Grid stackable>
         <Grid.Row>
           <Grid.Column>
@@ -133,6 +104,55 @@ const ProfilePage = ({
             />
           </Grid.Column>
         </Grid.Row>
+
+        <Grid.Row>
+          <Grid.Column>
+            {activeItem === "posts" && (
+              <>
+                {loading ? (
+                  <PlaceHolderPosts />
+                ) : posts.length > 0 ? (
+                  <>
+                    {posts.map((post) => (
+                      <CardPost
+                        key={post._id}
+                        post={post}
+                        setPosts={setPosts}
+                        setShowToastr={setShowToastr}
+                        user={user}
+                      />
+                    ))}
+                  </>
+                ) : (
+                  <NoPosts />
+                )}
+              </>
+            )}
+
+            {activeItem === "followers" && (
+              <Followers
+                user={user}
+                profileUserId={profile.user._id}
+                loggedUserFollowStats={loggedUserFollowStats}
+                setLoggedUserFollowStats={setLoggedUserFollowStats}
+              />
+            )}
+          </Grid.Column>
+        </Grid.Row>
+        {showToastr.show && showToastr.type === "error" && (
+          <MessageToastr
+            type={showToastr.type}
+            header="Delete Unsuccessful"
+            content="The post cannot be deleted right now, Please try again later."
+          />
+        )}
+        {showToastr.show && showToastr.type === "success" && (
+          <MessageToastr
+            type={showToastr.type}
+            header="Post Deleted Successfully"
+            content="The post have been deleted successfully !"
+          />
+        )}
       </Grid>
     </div>
   );

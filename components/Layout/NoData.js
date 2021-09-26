@@ -1,20 +1,38 @@
-import { Message, Button } from "semantic-ui-react";
+import { Segment, Icon, Message, Button, Divider } from "semantic-ui-react";
 
 export const NoProfilePosts = () => (
   <>
-    <Message info icon="meh" header="Sorry" content="User has not posted anything yet!" />
-    <Button icon="long arrow alternate left" content="Go Back" as="a" href="/" />
+    <Message
+      info
+      icon="meh"
+      header="Sorry"
+      content="User has not posted anything yet!"
+    />
+    <Button
+      icon="long arrow alternate left"
+      content="Go Back"
+      as="a"
+      href="/"
+    />
   </>
 );
 
 export const NoFollowData = ({ followersComponent, followingComponent }) => (
   <>
     {followersComponent && (
-      <Message icon="user outline" info content="User does not have followers" />
+      <Message
+        icon="user outline"
+        info
+        content="User does not have followers"
+      />
     )}
 
     {followingComponent && (
-      <Message icon="user outline" info content="User does not follow any users" />
+      <Message
+        icon="user outline"
+        info
+        content="User does not follow any users"
+      />
     )}
   </>
 );
@@ -29,12 +47,16 @@ export const NoMessages = () => (
 );
 
 export const NoPosts = () => (
-  <Message
-    info
-    icon="meh"
-    header="Hey!"
-    content="No Posts. Make sure you have followed someone."
-  />
+  <>
+    <Message icon warning size="small">
+      <Icon name="meh" />
+      <Message.Content>
+        <Message.Header>Oops !</Message.Header>
+        No more Posts.
+      </Message.Content>
+    </Message>
+    <Divider hidden />
+  </>
 );
 
 export const NoProfile = () => (

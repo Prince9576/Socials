@@ -14,6 +14,8 @@ import {
 } from "semantic-ui-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import cookies from "js-cookie";
+import MessageToastr from "../components/Common/MessageToastr";
+import { NoPosts } from "../components/Layout/NoData";
 
 function addStyles() {
   return {
@@ -92,18 +94,7 @@ const Home = ({ user, postData, errorLoading }) => {
                 ></div>
               }
               next={fetchDataOnScroll}
-              endMessage={
-                <Segment basic>
-                  <Message icon warning size="small">
-                    <Icon name="warning" />
-                    <Message.Content>
-                      <Message.Header>Oops !</Message.Header>
-                      No more Posts.
-                    </Message.Content>
-                  </Message>
-                  <Divider hidden />
-                </Segment>
-              }
+              endMessage={<NoPosts />}
               dataLength={posts.length}
             >
               {posts.map((post) => (
@@ -121,22 +112,18 @@ const Home = ({ user, postData, errorLoading }) => {
       </Segment>
 
       {showToastr.show && showToastr.type === "error" && (
-        <Message style={addStyles()} icon error size="small">
-          <Icon name="warning" />
-          <Message.Content>
-            <Message.Header>Delete Unsuccessful</Message.Header>
-            The post cannot be deleted right now, Please try again later.
-          </Message.Content>
-        </Message>
+        <MessageToastr
+          type={showToastr.type}
+          header="Delete Unsuccessful"
+          content="The post cannot be deleted right now, Please try again later."
+        />
       )}
       {showToastr.show && showToastr.type === "success" && (
-        <Message style={addStyles()} icon success size="small">
-          <Icon name="check circle" />
-          <Message.Content>
-            <Message.Header>Post Deleted Successfully</Message.Header>
-            The post have been deleted successfully !
-          </Message.Content>
-        </Message>
+        <MessageToastr
+          type={showToastr.type}
+          header="Post Deleted Successfully"
+          content="The post have been deleted successfully !"
+        />
       )}
     </Fragment>
   );
