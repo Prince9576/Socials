@@ -13,6 +13,7 @@ import CardPost from "../components/Posts/CardPost";
 import MessageToastr from "../components/Common/MessageToastr";
 import { NoPosts } from "../components/Layout/NoData";
 import Followers from "../components/Profile/Followers";
+import Following from "../components/Profile/Following";
 
 const ProfilePage = ({
   errorLoading,
@@ -90,6 +91,8 @@ const ProfilePage = ({
         profile={profile}
         isFollowing={isFollowing}
         loading={loading}
+        user={user}
+        setUserFollowStats={setLoggedUserFollowStats}
       />
       <Grid stackable>
         <Grid.Row>
@@ -131,6 +134,14 @@ const ProfilePage = ({
 
             {activeItem === "followers" && (
               <Followers
+                user={user}
+                profileUserId={profile.user._id}
+                loggedUserFollowStats={loggedUserFollowStats}
+                setLoggedUserFollowStats={setLoggedUserFollowStats}
+              />
+            )}
+            {activeItem === "following" && (
+              <Following
                 user={user}
                 profileUserId={profile.user._id}
                 loggedUserFollowStats={loggedUserFollowStats}

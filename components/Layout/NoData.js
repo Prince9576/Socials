@@ -24,6 +24,7 @@ export const NoFollowData = ({ followersComponent, followingComponent }) => (
         icon="user outline"
         info
         content="User does not have followers"
+        size="mini"
       />
     )}
 
@@ -32,6 +33,7 @@ export const NoFollowData = ({ followersComponent, followingComponent }) => (
         icon="user outline"
         info
         content="User does not follow any users"
+        size="mini"
       />
     )}
   </>

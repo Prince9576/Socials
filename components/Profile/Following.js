@@ -7,22 +7,22 @@ import { NoFollowData } from "../Layout/NoData";
 import Spinner from "../Layout/Spinner";
 import router from "next/router";
 import { followUser, unFollowUser } from "../../utils/profileActions";
-const Followers = ({
+const Following = ({
   user,
   profileUserId,
   loggedUserFollowStats,
   setLoggedUserFollowStats,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
-    const getFollowers = async () => {
+    const getFollowing = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${baseUrl}/api/profile/followers/${profileUserId}`,
+          `${baseUrl}/api/profile/following/${profileUserId}`,
           {
             headers: {
               Authorization: Cookies.get("token"),
@@ -30,26 +30,26 @@ const Followers = ({
           }
         );
         console.log("F", response);
-        setFollowers(response.data);
+        setFollowing(response.data);
       } catch (error) {
         console.error("Error Getting Followers", error);
       }
       setLoading(false);
     };
 
-    getFollowers();
+    getFollowing();
   }, [router.query]);
 
   return (
     <>
       {loading ? (
         <Spinner />
-      ) : followers.length > 0 ? (
-        followers.map((follower, index) => {
+      ) : following.length > 0 ? (
+        following.map((profileFollowing, index) => {
           const isFollowing =
             loggedUserFollowStats.following.length > 0 &&
             loggedUserFollowStats.following.filter((loggedUserFollowing) => {
-              return loggedUserFollowing.user === follower.user._id;
+              return loggedUserFollowing.user === profileFollowing.user._id;
             }).length > 0;
 
           return (
@@ -58,13 +58,13 @@ const Followers = ({
                 padding: "1rem",
                 backgroundColor: index % 2 !== 0 ? "#fff" : "#f4f4f4",
               }}
-              key={follower.user._id}
+              key={profileFollowing.user._id}
               divided
               verticalAlign="middle"
             >
               <List.Item>
                 <List.Content floated="right">
-                  {follower.user._id !== user._id && (
+                  {profileFollowing.user._id !== user._id && (
                     <Button
                       size="mini"
                       color={isFollowing ? "instagram" : "twitter"}
@@ -78,11 +78,11 @@ const Followers = ({
                         setFollowLoading(true);
                         isFollowing
                           ? await unFollowUser({
-                              userIdToUnfollow: follower.user._id,
+                              userIdToUnfollow: profileFollowing.user._id,
                               setUserFollowStats: setLoggedUserFollowStats,
                             })
                           : await followUser({
-                              userIdToFollow: follower.user._id,
+                              userIdToFollow: profileFollowing.user._id,
                               setUserFollowStats: setLoggedUserFollowStats,
                             });
                         setFollowLoading(false);
@@ -90,14 +90,17 @@ const Followers = ({
                     />
                   )}
                 </List.Content>
-                <Image src={follower.user.profilePicUrl} avatar />
-                <List.Content as="a" href={`/${follower.user.username}`}>
+                <Image src={profileFollowing.user.profilePicUrl} avatar />
+                <List.Content
+                  as="a"
+                  href={`/${profileFollowing.user.username}`}
+                >
                   <span
                     style={{
                       fontSize: "0.95rem",
                     }}
                   >
-                    {follower.user.name}
+                    {profileFollowing.user.name}
                   </span>
                 </List.Content>
               </List.Item>
@@ -105,10 +108,10 @@ const Followers = ({
           );
         })
       ) : (
-        <NoFollowData followersComponent={true} />
+        <NoFollowData followingComponent={true} />
       )}
     </>
   );
 };
 
-export default Followers;
+export default Following;

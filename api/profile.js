@@ -92,6 +92,9 @@ router.post("/follow/:userIdToFollow", authMiddleware, async (req, res) => {
   const user = await FollowerModel.findOne({ user: userId });
   const userToFollow = await FollowerModel.findOne({ user: userIdToFollow });
 
+  if (user.user.toString() === userToFollow.user.toString())
+    return res.status(401).send("Cannot Follow Itself");
+
   if (!user || !userToFollow) return res.status(404).send("Not Found");
 
   // Check If User is Already Following

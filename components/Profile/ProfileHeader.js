@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Profile.module.css";
 import { Button, Icon, Image, Popup } from "semantic-ui-react";
+import { followUser, unFollowUser } from "../../utils/profileActions";
 
-const ProfileHeader = ({ profile, isFollowing, loading }) => {
+const ProfileHeader = ({
+  profile,
+  isFollowing,
+  loading,
+  user,
+  setUserFollowStats,
+}) => {
+  const [followLoading, setFollowLoading] = useState(false);
   return (
     <div className={styles.profile}>
       <div className={styles.cover}>
@@ -26,16 +34,31 @@ const ProfileHeader = ({ profile, isFollowing, loading }) => {
             circular
             src={profile.user.profilePicUrl}
           />
-          <Button
-            loading={loading}
-            disabled={loading}
-            size="mini"
-            fluid
-            color="blue"
-            content={isFollowing ? "Following" : "Follow"}
-            icon={isFollowing ? "check circle" : "add user"}
-            color={isFollowing ? "instagram" : "twitter"}
-          />
+          {profile.user._id !== user._id && (
+            <Button
+              loading={loading}
+              disabled={loading}
+              size="mini"
+              fluid
+              color="blue"
+              content={isFollowing ? "Following" : "Follow"}
+              icon={isFollowing ? "check circle" : "add user"}
+              color={isFollowing ? "instagram" : "twitter"}
+              onClick={async () => {
+                setFollowLoading(true);
+                isFollowing
+                  ? await unFollowUser({
+                      userIdToUnfollow: profile.user._id,
+                      setUserFollowStats: setUserFollowStats,
+                    })
+                  : await followUser({
+                      userIdToFollow: profile.user._id,
+                      setUserFollowStats: setUserFollowStats,
+                    });
+                setFollowLoading(false);
+              }}
+            />
+          )}
         </div>
       </div>
       <div className={styles["info-container"]}>
