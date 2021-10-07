@@ -14,6 +14,7 @@ import MessageToastr from "../components/Common/MessageToastr";
 import { NoPosts } from "../components/Layout/NoData";
 import Followers from "../components/Profile/Followers";
 import Following from "../components/Profile/Following";
+import { UpdateProfile } from "../components/Profile/UpdateProfile";
 
 const ProfilePage = ({
   errorLoading,
@@ -33,7 +34,7 @@ const ProfilePage = ({
     useState(userFollowStats);
   const handleItemClick = (item) => setActiveItem(item);
 
-  console.log({ user, profile });
+  console.log("Profile Data", { user, profile });
 
   const ownAccount = profile.user._id === user._id;
   const isFollowing =
@@ -148,6 +149,7 @@ const ProfilePage = ({
                 setLoggedUserFollowStats={setLoggedUserFollowStats}
               />
             )}
+            {activeItem === "update" && <UpdateProfile Profile={profile} />}
           </Grid.Column>
         </Grid.Row>
         {showToastr.show && showToastr.type === "error" && (

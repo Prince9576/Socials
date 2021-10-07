@@ -38,12 +38,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
         },
       });
       const { user, followerStats } = res.data;
-      console.log("User", {
-        res: res.data.user,
-        user,
-        followerStats,
-        protectedRoutes,
-      });
+
       if (user && !protectedRoutes) {
         redirectUser(ctx, "/");
       }

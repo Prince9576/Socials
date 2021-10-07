@@ -96,14 +96,12 @@ const Signup = () => {
       setFormLoading(false);
       setErrorMsg("Picture Upload Error");
     }
-    console.log("User at signup", user, profilePictureUrl);
     const response = await signupUser(
       user,
       profilePictureUrl,
       setErrorMsg,
       setFormLoading
     );
-    console.log("User Registred", response);
   };
   return (
     <div className="wrapper">

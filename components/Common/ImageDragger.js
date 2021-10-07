@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import { Form, Segment, Divider, Icon, Image, Header } from "semantic-ui-react";
 import styles from "./ImageDragger.module.css";
+import router, { useRouter } from "next/router";
 const ImageDragger = ({
-  media,
   setMedia,
   mediaPreview,
   setMediaPreview,
@@ -10,7 +10,9 @@ const ImageDragger = ({
   setHighlighted,
   inputRef,
   fileChangeHandler,
+  profilePicUrl,
 }) => {
+  const signupRoute = useRouter().route === "/signup";
   return (
     <Form.Field>
       <input
@@ -47,14 +49,27 @@ const ImageDragger = ({
               basic
               color={highlighted ? "green" : ""}
             >
-              <Header icon>
-                <Icon
-                  name="file image outline"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => inputRef.current.click()}
-                />
-                Drag and drop or click to upload image.
-              </Header>
+              {signupRoute ? (
+                <Header icon>
+                  <Icon
+                    name="file image outline"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => inputRef.current.click()}
+                  />
+                  Drag and drop or click to upload image.
+                </Header>
+              ) : (
+                <span>
+                  <Image
+                    size="small"
+                    className={styles.imagePreview}
+                    src={profilePicUrl}
+                    centered
+                    style={{ cursor: "pointer", height: "150px" }}
+                    onClick={() => inputRef.current.click()}
+                  />
+                </span>
+              )}
             </Segment>
           </Fragment>
         ) : (

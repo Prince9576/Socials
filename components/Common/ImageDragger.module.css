@@ -1,6 +1,6 @@
 .imagePreview {
-  height: 10rem;
-  width: 10rem;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
   padding: 5px;

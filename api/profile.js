@@ -61,7 +61,6 @@ router.get("/followers/:userId", authMiddleware, async (req, res) => {
       path: "followers.user",
       model: UserModel,
     });
-    console.log("User", user);
     res.status(200).json(user.followers);
   } catch (error) {
     console.error("Error fetching Followers", error);
@@ -164,16 +163,19 @@ router.post("/unfollow/:userIdToUnfollow", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/upadte", authMiddleware, async (req, res) => {
+router.post("/updateProfile", authMiddleware, async (req, res) => {
+  console.log("Reached /update", req.body);
   try {
     const { userId } = req;
     const { bio, instagram, facebook, youtube, twitter, profilePicUrl } =
-      req.body.user;
+      req.body;
 
+    const Profile = await ProfileModel.findOne({ user: userId });
+    console.log("Profile", Profile);
     let profileFields = {};
     profileFields.user = userId;
     profileFields.bio = bio;
-    profileFields.social = {};
+    profileFields.social = { ...Profile.social };
     if (facebook) profileFields.social.facebook = facebook;
     if (youtube) profileFields.social.youtube = youtube;
     if (instagram) profileFields.social.instagram = instagram;

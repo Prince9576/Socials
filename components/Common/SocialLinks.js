@@ -24,7 +24,7 @@ const SocialLinks = ({
         content="Add Social Profiles"
         color="red"
         type="button"
-        size="large"
+        size="small"
         onClick={() => {
           console.log("Social links", socialLinks);
           setSocialLinks(!socialLinks);
