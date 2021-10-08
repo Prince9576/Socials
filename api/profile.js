@@ -207,12 +207,12 @@ router.post("/settings/password", authMiddleware, async (req, res) => {
       return res.status(401).send("Password must be 6 characters long");
 
     const user = await UserModel.findById(req.userId).select("+password");
-    const isPassword = bcrypt.compare(currentPassword, user.password);
+    const isPassword = await bcrypt.compare(currentPassword, user.password);
     if (!isPassword) {
       return res.status(401).send("Incorrect Password");
     }
 
-    user.password = bcrypt.hash(newPassword, 10);
+    user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
     return res.status(200).send("Password Updated");

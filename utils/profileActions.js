@@ -67,3 +67,23 @@ export const updateProfile = async ({
     console.error("Error Updating Profile", error);
   }
 };
+
+export const updatePassword = async ({
+  setSuccess,
+  userPasswords,
+  setErrorMsg,
+  setShowUpdatePassword,
+}) => {
+  const { currentPassword, newPassword } = userPasswords;
+  try {
+    const res = await Axios.post("/settings/password", {
+      currentPassword,
+      newPassword,
+    });
+    setSuccess(true);
+    setShowUpdatePassword(false);
+  } catch (error) {
+    console.error("Password Update Error", error);
+    setErrorMsg(error);
+  }
+};

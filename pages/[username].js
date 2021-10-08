@@ -15,6 +15,7 @@ import { NoPosts } from "../components/Layout/NoData";
 import Followers from "../components/Profile/Followers";
 import Following from "../components/Profile/Following";
 import { UpdateProfile } from "../components/Profile/UpdateProfile";
+import ProfileSettings from "../components/Profile/ProfileSettings";
 
 const ProfilePage = ({
   errorLoading,
@@ -150,6 +151,9 @@ const ProfilePage = ({
               />
             )}
             {activeItem === "update" && <UpdateProfile Profile={profile} />}
+            {activeItem === "settings" && (
+              <ProfileSettings newMessagePopup={user.newMessagePopup} />
+            )}
           </Grid.Column>
         </Grid.Row>
         {showToastr.show && showToastr.type === "error" && (
