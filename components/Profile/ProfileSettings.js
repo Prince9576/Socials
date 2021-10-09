@@ -8,7 +8,7 @@ import {
   List,
   Message,
 } from "semantic-ui-react";
-import { updatePassword } from "../../utils/profileActions";
+import { toggleMessagePopup, updatePassword } from "../../utils/profileActions";
 
 const ProfileSettings = ({ newMessagePopup }) => {
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
@@ -25,11 +25,7 @@ const ProfileSettings = ({ newMessagePopup }) => {
   return (
     <>
       {success && (
-        <Message
-          success
-          header="Password Updated Successfully"
-          icon="check circle"
-        />
+        <Message success header="Updated Successfully" icon="check circle" />
       )}
       <Divider hidden />
       <List size="big" animated>
@@ -81,7 +77,13 @@ const ProfileSettings = ({ newMessagePopup }) => {
                 color="primary"
                 toggle
                 checked={popupSetting}
-                onChange={() => {}}
+                onChange={() => {
+                  toggleMessagePopup({
+                    setPopupSetting,
+                    setSuccess,
+                    popupSetting,
+                  });
+                }}
               />
             </div>
           )}
@@ -191,7 +193,7 @@ const UpdatePassword = ({ setSuccess, setShowUpdatePassword }) => {
             onClick={() => setShowUpdatePassword(false)}
           />
         </ButtonGroup>
-        <Message icon="meh" content={errorMsg} header="Oops" error />
+        <Message icon="meh" content={errorMsg} header="Oops!" error />
       </Form>
       <Divider hidden />
     </>

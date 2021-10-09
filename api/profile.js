@@ -204,18 +204,20 @@ router.post("/settings/password", authMiddleware, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     if (newPassword.length < 6)
-      return res.status(401).send("Password must be 6 characters long");
+      return res
+        .status(401)
+        .json({ msg: "Password must be 6 characters long" });
 
     const user = await UserModel.findById(req.userId).select("+password");
     const isPassword = await bcrypt.compare(currentPassword, user.password);
     if (!isPassword) {
-      return res.status(401).send("Incorrect Password");
+      return res.status(401).json({ msg: "Incorrect Password" });
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
-    return res.status(200).send("Password Updated");
+    return res.status(200).json({ msg: "Updated" });
   } catch (error) {
     console.error("Error Updating Password", error);
     return res.status(500).send("Internal Server Error");
@@ -233,6 +235,7 @@ router.post("/settings/messagePopup", authMiddleware, async (req, res) => {
       user.newMessagePopup = true;
       await user.save();
     }
+    return res.status(200).send("Successful");
   } catch (error) {
     console.error("Error Updating Message Popup", error);
     return res.status(500).send("Internal Server Error");

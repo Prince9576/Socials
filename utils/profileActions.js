@@ -80,10 +80,29 @@ export const updatePassword = async ({
       currentPassword,
       newPassword,
     });
-    setSuccess(true);
-    setShowUpdatePassword(false);
+    console.log("Result", res.data);
+    if (res.data.msg === "Updated") {
+      setSuccess(true);
+      setShowUpdatePassword(false);
+    } else {
+      setErrorMsg(res.data);
+    }
   } catch (error) {
     console.error("Password Update Error", error);
-    setErrorMsg(error);
+    setErrorMsg("Password Update Error.");
   }
+};
+
+export const toggleMessagePopup = async ({
+  setPopupSetting,
+  setSuccess,
+  popupSetting,
+}) => {
+  console.log({ popupSetting });
+  try {
+    const res = await Axios.post("/settings/messagePopup");
+    console.log(" toggle Result", res);
+    setPopupSetting(!popupSetting);
+    setSuccess(true);
+  } catch (error) {}
 };
