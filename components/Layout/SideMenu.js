@@ -60,13 +60,11 @@ const SideMenu = (props) => {
                 active={isActive("/notifications")}
               >
                 <Icon
-                  name={
-                    unreadNotification ? "hand point right" : "bell outline"
-                  }
+                  name={unreadNotification ? "bell" : "bell outline"}
                   size="large"
                   color={
                     (isActive("/notifications") && "blue") ||
-                    (unreadNotification && "orange")
+                    (unreadNotification && "red")
                   }
                 />
                 <List.Content>

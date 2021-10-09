@@ -4,6 +4,12 @@ const authMiddleware = require("../middleware/authMiddleware");
 const PostModel = require("../models/PostModel");
 const UserModel = require("../models/UserModel");
 const uuid = require("uuid").v4;
+const {
+  newLikeNotification,
+  newRemoveLikeNotification,
+  newCommentNotification,
+  newRemoveCommentNotification,
+} = require("../utilsServer/notificationActions");
 
 // POST A POST
 router.post("/", authMiddleware, async (req, res) => {
@@ -125,6 +131,9 @@ router.put("/like/:postId", authMiddleware, async (req, res) => {
 
     await post.likes.unshift({ user: userId });
     await post.save();
+    if (post.user.toString() !== userId) {
+      await newLikeNotification(userId, postId, post.user.toString());
+    }
 
     return res.status(200).send("Post Liked Successfully");
   } catch (error) {
@@ -157,7 +166,9 @@ router.put("/unlike/:postId", authMiddleware, async (req, res) => {
       .indexOf(userId);
     await post.likes.splice(index, 1);
     await post.save();
-
+    if (post.user.toString() !== userId) {
+      await newRemoveLikeNotification(userId, postId, post.user.toString());
+    }
     return res.status(200).send("Post Unliked Successfully");
   } catch (error) {
     console.error("Error Liking Post", error);
@@ -183,6 +194,7 @@ router.get("/like/:postId", authMiddleware, async (req, res) => {
 
 router.post("/comment/:postId", authMiddleware, async (req, res) => {
   const { postId } = req.params;
+  const { userId } = req;
   const { text } = req.body;
   try {
     if (text.length < 1)
@@ -192,13 +204,23 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
 
     const newComment = {
       _id: uuid(),
-      user: req.userId,
+      user: userId,
       text,
       date: Date.now(),
     };
 
     await post.comments.unshift(newComment);
     await post.save();
+
+    if (post.user.toString() !== userId) {
+      await newCommentNotification(
+        userId,
+        postId,
+        newComment._id,
+        post.user.toString(),
+        text
+      );
+    }
 
     return res.status(200).json({ id: newComment._id });
   } catch (error) {
@@ -240,6 +262,14 @@ router.delete(
       }
 
       deleteComment();
+      if (post.user.toString() !== userId) {
+        await newRemoveCommentNotification(
+          userId,
+          postId,
+          commentId,
+          post.user.toString()
+        );
+      }
     } catch (error) {
       console.error("Error Deleting Comment", error);
       return res.status(500).send("Internal Server Error");

@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
 const authMiddleware = require("../middleware/authMiddleware");
+const NotificationModel = require("../models/NotificationModel");
 
 router.get("/", authMiddleware, async (req, res) => {
   const userId = req.userId;
@@ -50,6 +51,13 @@ router.post("/", async (req, res) => {
         res.status(200).json(token);
       }
     );
+
+    const notificationModel = await NotificationModel.findOne({
+      user: user._id,
+    });
+    if (!notificationModel) {
+      await new NotificationModel({ user: user._id, notifications: [] }).save();
+    }
   } catch (err) {
     console.error("Error at signup", err);
     return res.status(500).send("Internal Server Error");

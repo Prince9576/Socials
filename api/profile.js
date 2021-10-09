@@ -6,7 +6,10 @@ const ProfileModel = require("../models/ProfileModel");
 const FollowerModel = require("../models/FollowerModel");
 const PostModel = require("../models/PostModel");
 const bcrypt = require("bcryptjs");
-
+const {
+  newFollowerNotification,
+  newRemoveFollowerNotification,
+} = require("../utilsServer/notificationActions");
 // GET PROFILE INFO
 router.get("/:username", authMiddleware, async (req, res) => {
   try {
@@ -112,7 +115,7 @@ router.post("/follow/:userIdToFollow", authMiddleware, async (req, res) => {
 
   await userToFollow.followers.unshift({ user: userId });
   await userToFollow.save();
-
+  await newFollowerNotification(userId, userIdToFollow);
   return res.status(200).send("Successfully Followed");
 });
 
@@ -156,6 +159,7 @@ router.post("/unfollow/:userIdToUnfollow", authMiddleware, async (req, res) => {
       .indexOf(userId);
     await userToUnfollow.followers.splice(followerIndex, 1);
     await userToUnfollow.save();
+    await newRemoveFollowerNotification(userId, userIdToUnfollow);
     return res.status(200).send("Successfully Unfollowed");
   } catch (error) {
     console.error("Error Unfollowing", error);
@@ -163,6 +167,7 @@ router.post("/unfollow/:userIdToUnfollow", authMiddleware, async (req, res) => {
   }
 });
 
+// UPDATE PROFILE
 router.post("/updateProfile", authMiddleware, async (req, res) => {
   console.log("Reached /update", req.body);
   try {
