@@ -64,3 +64,11 @@ export const NoPosts = () => (
 export const NoProfile = () => (
   <Message info icon="meh" header="Hey!" content="No Profile Found." />
 );
+
+export const NoNotifications = () => {
+  <Message
+    info
+    icon="meh"
+    content="You don't have any notifications right now."
+  />;
+};
