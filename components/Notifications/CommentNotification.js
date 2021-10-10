@@ -27,7 +27,12 @@ const CommentNotificaiton = ({ notification }) => {
             <Feed.Extra images>
               {" "}
               <a href={`/post/${notification.post._id}`}>
-                <img src={notification.post.picUrl} />
+                <img
+                  style={{
+                    border: "3px solid white",
+                  }}
+                  src={notification.post.picUrl}
+                />
               </a>{" "}
             </Feed.Extra>
           )}

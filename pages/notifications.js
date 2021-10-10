@@ -62,7 +62,10 @@ const Notifications = ({
                       <>
                         {notification.type === "newLike" &&
                           notification.post !== null && (
-                            <LikeNotificaiton notification={notification} />
+                            <LikeNotificaiton
+                              user={user}
+                              notification={notification}
+                            />
                           )}
                         {notification.type === "newComment" &&
                           notification.post !== null && (

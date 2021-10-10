@@ -15,7 +15,7 @@ import CommentInputField from "./CommentInputFields";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
 import { deletePost, likePost } from "../../utils/postActions";
 import LikesList from "./LikesList";
-import ImageModal from "./ImageModal";
+import PostModal from "./PostModal";
 
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   console.log("CardPost", { post });
@@ -38,7 +38,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
           width: !post.picUrl && "35%",
         }}
       >
-        <ImageModal
+        <PostModal
           post={post}
           user={user}
           likes={likes}

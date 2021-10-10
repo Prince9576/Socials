@@ -7,7 +7,7 @@ import calculateTimeDiff from "../../utils/calculateTimeDiff";
 import { likePost } from "../../utils/postActions";
 import LikesList from "./LikesList";
 import styles from "./CardPost.module.css";
-const ImageModal = ({
+const PostModal = ({
   post,
   user,
   setLikes,
@@ -151,4 +151,4 @@ const ImageModal = ({
   );
 };
 
-export default ImageModal;
+export default PostModal;
