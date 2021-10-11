@@ -8,19 +8,25 @@ const UserModel = require("../models/UserModel");
 router.get("/", authMiddleware, async (req, res) => {
   const { userId } = req;
   try {
-    const notifications = await NotificationModel.findOne({ user: userId })
-      .populate({ path: "notifications.user", model: UserModel })
-      .populate({
-        path: "notifications.post",
-        model: PostModel,
-        populate: {
-          path: "comments",
+    const posts = await PostModel.findOne({ user: userId });
+
+    if (posts) {
+      const notifications = await NotificationModel.findOne({ user: userId })
+        .populate({ path: "notifications.user", model: UserModel })
+        .populate({
+          path: "notifications.post",
+          model: PostModel,
           populate: {
-            path: "user",
-            model: UserModel,
+            path: "comments",
+            populate: {
+              path: "user",
+              model: UserModel,
+            },
           },
-        },
-      });
+        });
+      return res.status(200).send(notifications);
+    }
+    const notifications = await NotificationModel.findOne({ user: userId });
     return res.status(200).send(notifications);
   } catch (error) {
     console.error("Notification GET error", error);

@@ -64,7 +64,12 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
           )}
 
           <Card.Content>
-            <Image src={user.profilePicUrl} floated="left" avatar circular />
+            <Image
+              src={post.user.profilePicUrl}
+              floated="left"
+              avatar
+              circular
+            />
             {(user.role === "root" || post.user._id === user._id) && (
               <Image floated="right">
                 <Icon

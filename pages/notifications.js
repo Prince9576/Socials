@@ -41,7 +41,7 @@ const Notifications = ({
 
   return (
     <>
-      {notifications.length === 0 && <NoNotifications />}
+      {notifications.length <= 0 && <NoNotifications />}
       {notifications.length > 0 && (
         <>
           <div

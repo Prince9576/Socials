@@ -66,9 +66,11 @@ export const NoProfile = () => (
 );
 
 export const NoNotifications = () => {
-  <Message
-    info
-    icon="meh"
-    content="You don't have any notifications right now."
-  />;
+  return (
+    <Message
+      info
+      icon="meh"
+      content="You don't have any notifications right now."
+    />
+  );
 };
