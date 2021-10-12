@@ -2,17 +2,10 @@ import React, { createRef, Fragment } from "react";
 import HeadTags from "./HeadTags";
 import Router from "next/router";
 import nProgress from "nprogress";
-import {
-  Container,
-  Divider,
-  Visibility,
-  Ref,
-  Grid,
-  Sticky,
-  Image,
-} from "semantic-ui-react";
+import { Visibility, Ref, Grid, Sticky } from "semantic-ui-react";
 import SideMenu from "./SideMenu";
-import SearchComponent from "./Search";
+
+import CommonNav from "./CommonNav";
 
 function Layout({ children, user }) {
   Router.onRouteChangeStart = () => nProgress.start();
@@ -36,27 +29,8 @@ function Layout({ children, user }) {
             <Grid.Column width={12}>
               {user && (
                 <Fragment>
-                  <Grid.Row
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      padding: "9px",
-                      backgroundColor: "rgb(33,133,208, 0.95)",
-                      marginBottom: "1.5rem",
-                      borderRadius: "3px",
-                    }}
-                  >
-                    <SearchComponent />
-                    <Image
-                      style={{
-                        marginLeft: "10px",
-                        border: "1px solid white",
-                      }}
-                      src={user.profilePicUrl}
-                      circular
-                      avatar
-                    />
+                  <Grid.Row>
+                    <CommonNav user={user} />
                   </Grid.Row>
                   <Grid.Row>
                     <Visibility context={contextRef}>{children}</Visibility>

@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
 const authMiddleware = require("../middleware/authMiddleware");
 const NotificationModel = require("../models/NotificationModel");
+const ChatModel = require("../models/ChatModel");
 
 router.get("/", authMiddleware, async (req, res) => {
   const userId = req.userId;
@@ -52,11 +53,11 @@ router.post("/", async (req, res) => {
       }
     );
 
-    const notificationModel = await NotificationModel.findOne({
+    const chatModel = await ChatModel.findOne({
       user: user._id,
     });
-    if (!notificationModel) {
-      await new NotificationModel({ user: user._id, notifications: [] }).save();
+    if (!chatModel) {
+      await new ChatModel({ user: user._id, chats: [] }).save();
     }
   } catch (err) {
     console.error("Error at signup", err);

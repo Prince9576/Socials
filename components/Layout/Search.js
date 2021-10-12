@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Search, List, Image } from "semantic-ui-react";
+import { Search, List } from "semantic-ui-react";
+import { useRouter } from "next/router";
 import axios from "axios";
 import baseUrl from "../../utils/baseUrl";
 import styles from "./Search.module.css";
@@ -7,6 +8,7 @@ import cookie from "js-cookie";
 let cancel;
 
 const SearchComponent = () => {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([{}]);
@@ -34,6 +36,7 @@ const SearchComponent = () => {
           _id: result._id,
           profilePicUrl: result.profilePicUrl,
           name: result.name,
+          username: result.username,
         };
       });
       console.log({ results, mappedRes });
@@ -67,12 +70,13 @@ const SearchComponent = () => {
       minCharacters={1}
       onResultSelect={(e, data) => {
         console.log("Search Response", data);
+        router.push(`/${data.result.username}`);
       }}
     ></Search>
   );
 };
 
-const ResultRenderer = ({ _id, profilePicUrl, name }) => {
+const ResultRenderer = ({ _id, profilePicUrl, name, username }) => {
   return (
     <List key={_id}>
       <div className={styles.listItem}>

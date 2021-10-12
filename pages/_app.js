@@ -20,7 +20,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   const protectedRoutes =
     ctx.pathname === "/" ||
     ctx.pathname === "/[username]" ||
-    ctx.pathname === "/notifications";
+    ctx.pathname === "/notifications" ||
+    ctx.pathname === "/messages";
   console.log("Reached till here", { token, protectedRoutes });
   if (!token) {
     console.log("Token false block", { protectedRoutes, ctx });
