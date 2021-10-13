@@ -8,12 +8,24 @@ const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 require("dotenv").config({ path: "./config.env" });
 const connectDb = require("./utilsServer/connectDb");
+const { addUser, removeUser } = require("./utilsServer/roomActions");
 const PORT = process.env.PORT || 3000;
 connectDb();
 app.use(express.json());
 
 io.on("connection", (socket) => {
-  socket.on("message", (data) => console.log(data));
+  socket.on("join", async ({ userId }) => {
+    const users = await addUser(userId, socket.id);
+    setInterval(() => {
+      socket.emit("connectedUsers", {
+        users: users.filter((user) => user.userId !== userId),
+      });
+    }, 10000);
+  });
+
+  socket.on("disconnect", async () => {
+    await removeUser(socket.id);
+  });
 });
 
 nextApp.prepare().then(() => {

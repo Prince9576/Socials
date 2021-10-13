@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 
 const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
+  const [connectedUsers, setConnectedUsers] = useState([]);
   const router = useRouter();
   const socket = useRef();
   console.log("Chats ", chats);
@@ -18,16 +19,30 @@ const Messages = ({ user, chatsData }) => {
     if (!socket.current) {
       socket.current = io(baseUrl);
     }
-    socket.current.emit("message", { text: "Hello" });
+    if (socket.current) {
+      socket.current.emit("join", { userId: user._id });
+      socket.current.on("connectedUsers", ({ users }) => {
+        users.length > 0 && setConnectedUsers(users);
+        console.log("Online users", users);
+      });
+    }
+
     if (chats.length > 0 && !router.query.message) {
       router.push(`/messages?message=${chats[0].messagesWith}`, undefined, {
         shallow: true,
       });
     }
+
+    return () => {
+      if (socket.current) {
+        socket.current.emit("disconnect");
+        socket.current.off();
+      }
+    };
   }, []);
   return (
     <Grid>
-      <Grid.Column floated="left" width="5">
+      <Grid.Column floated="left" width="6">
         <Comment.Group size="big">
           <Segment
             raised
@@ -64,12 +79,19 @@ const Messages = ({ user, chatsData }) => {
               </span>
             </div>
             {chats.map((chat, i) => {
-              return <ChatList key={i} chat={chat} setChats={setChats} />;
+              return (
+                <ChatList
+                  key={i}
+                  connectedUsers={connectedUsers}
+                  chat={chat}
+                  setChats={setChats}
+                />
+              );
             })}
           </Segment>
         </Comment.Group>
       </Grid.Column>
-      <Grid.Column floated="right" width="11">
+      <Grid.Column floated="right" width="10">
         <Grid.Row>
           <CommonNav user={user} />
         </Grid.Row>
