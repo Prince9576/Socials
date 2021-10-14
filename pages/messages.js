@@ -122,13 +122,16 @@ const Messages = ({ user, chatsData }) => {
           <CommonNav user={user} />
         </Grid.Row>
         <Grid.Row>
-          <ChatBoard
-            messages={messages}
-            bannerData={bannerData}
-            socket={socket}
-            user={user}
-            messagesWith={openChatId.current}
-          />
+          {router.query.message && messages.length > 0 && (
+            <ChatBoard
+              messages={messages}
+              bannerData={bannerData}
+              socket={socket}
+              user={user}
+              messagesWith={openChatId.current}
+              setMessages={setMessages}
+            />
+          )}
         </Grid.Row>
       </Grid.Column>
     </Grid>
