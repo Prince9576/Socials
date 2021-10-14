@@ -14,7 +14,11 @@ const Messages = ({ user, chatsData }) => {
   const [connectedUsers, setConnectedUsers] = useState([]);
   const router = useRouter();
   const socket = useRef();
-  console.log("Chats ", chats);
+
+  const [messages, setMessages] = useState([]);
+  const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" });
+  const openChatId = useRef("");
+
   useEffect(() => {
     if (!socket.current) {
       socket.current = io(baseUrl);
@@ -40,14 +44,36 @@ const Messages = ({ user, chatsData }) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const loadMessages = () => {
+      console.log("Loaded called");
+      socket.current.emit("loadMessages", {
+        userId: user._id,
+        messagesWith: router.query.message,
+      });
+
+      socket.current.on("messagesLoaded", ({ chat }) => {
+        console.log("Messages Loaded", { chat });
+        setMessages(chat.chat);
+        setBannerData({
+          name: chat.messagesWith.name,
+          profilePicUrl: chat.messagesWith.profilePicUrl,
+        });
+        openChatId.current = chat.messagesWith._id;
+      });
+    };
+
+    if (socket.current) {
+      loadMessages();
+    }
+  }, [router.query.message]);
+
   return (
     <Grid>
-      <Grid.Column floated="left" width="6">
+      <Grid.Column floated="left" width="5">
         <Comment.Group size="big">
-          <Segment
-            raised
-            style={{ overflow: "auto", minHeight: "20rem", maxHeight: "40rem" }}
-          >
+          <Segment raised style={{ overflow: "auto", height: "44.75rem" }}>
             <div
               style={{
                 padding: "1rem",
@@ -91,12 +117,18 @@ const Messages = ({ user, chatsData }) => {
           </Segment>
         </Comment.Group>
       </Grid.Column>
-      <Grid.Column floated="right" width="10">
+      <Grid.Column floated="right" width="11">
         <Grid.Row>
           <CommonNav user={user} />
         </Grid.Row>
         <Grid.Row>
-          <ChatBoard user={user} chats={chats} />
+          <ChatBoard
+            messages={messages}
+            bannerData={bannerData}
+            socket={socket}
+            user={user}
+            messagesWith={openChatId.current}
+          />
         </Grid.Row>
       </Grid.Column>
     </Grid>

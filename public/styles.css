@@ -40,6 +40,14 @@ body {
   margin: auto;
 }
 
+.custom-avatar {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid white;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

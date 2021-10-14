@@ -9,6 +9,7 @@ const handle = nextApp.getRequestHandler();
 require("dotenv").config({ path: "./config.env" });
 const connectDb = require("./utilsServer/connectDb");
 const { addUser, removeUser } = require("./utilsServer/roomActions");
+const { loadMessages } = require("./utilsServer/messageActions");
 const PORT = process.env.PORT || 3000;
 connectDb();
 app.use(express.json());
@@ -25,6 +26,14 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", async () => {
     await removeUser(socket.id);
+  });
+
+  socket.on("loadMessages", async ({ userId, messagesWith }) => {
+    const { chat, error } = await loadMessages(userId, messagesWith);
+    console.log("Event Reached", chat);
+    if (!error) {
+      socket.emit("messagesLoaded", { chat });
+    }
   });
 });
 

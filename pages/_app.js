@@ -24,13 +24,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     ctx.pathname === "/messages";
   console.log("Reached till here", { token, protectedRoutes });
   if (!token) {
-    console.log("Token false block", { protectedRoutes, ctx });
     protectedRoutes && redirectUser(ctx, "/login");
   } else {
-    console.log("Token true block", {
-      component: Component.getInitialProps,
-      ctx,
-    });
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
