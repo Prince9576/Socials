@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 
-const MessageInputField = ({ socket, user, messagesWith }) => {
+const MessageInputField = ({ sendMessage }) => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   return (
@@ -11,7 +11,14 @@ const MessageInputField = ({ socket, user, messagesWith }) => {
         borderRadius: "5px",
       }}
     >
-      <Form reply onSubmit={(e) => e.preventDefault()}>
+      <Form
+        reply
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendMessage(text);
+          setText("");
+        }}
+      >
         <Form.Input
           size="large"
           placeholder="Send new message"

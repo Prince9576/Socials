@@ -10,6 +10,7 @@ const ChatBoard = ({
   user,
   messagesWith,
   setMessages,
+  sendMessage,
 }) => {
   console.log("Messages", messages);
   return (
@@ -50,11 +51,7 @@ const ChatBoard = ({
         })}
       </div>
       <div>
-        <MessageInputField
-          socket={socket}
-          user={user}
-          messagesWith={messagesWith}
-        />
+        <MessageInputField sendMessage={sendMessage} />
       </div>
     </div>
   );

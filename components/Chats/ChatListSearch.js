@@ -3,11 +3,11 @@ import { Search, List } from "semantic-ui-react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import baseUrl from "../../utils/baseUrl";
-import styles from "./Search.module.css";
+import styles from "../Layout/Search.module.css";
 import cookie from "js-cookie";
 let cancel;
 
-const SearchComponent = ({ shrinken }) => {
+const ChatListSearchComponent = ({ shrinken }) => {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -94,4 +94,4 @@ const ResultRenderer = ({ _id, profilePicUrl, name, username }) => {
   );
 };
 
-export default SearchComponent;
+export default ChatListSearchComponent;

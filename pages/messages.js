@@ -1,17 +1,20 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+
 import io from "socket.io-client";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
-import { Comment, Grid, Segment } from "semantic-ui-react";
+import { Comment, Grid, Icon, Segment } from "semantic-ui-react";
 import CommonNav from "../components/Layout/CommonNav";
 import ChatList from "../components/Chats/ChatList";
 import ChatBoard from "../components/Chats/ChatBoard";
 import { useRouter } from "next/router";
+import ChatListSearchComponent from "../components/Chats/ChatListSearch";
 
 const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
   const [connectedUsers, setConnectedUsers] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
   const socket = useRef();
 
@@ -19,6 +22,7 @@ const Messages = ({ user, chatsData }) => {
   const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" });
   const openChatId = useRef("");
 
+  // CONNECTION
   useEffect(() => {
     if (!socket.current) {
       socket.current = io(baseUrl);
@@ -45,6 +49,7 @@ const Messages = ({ user, chatsData }) => {
     };
   }, []);
 
+  // GET CHAT
   useEffect(() => {
     const loadMessages = () => {
       console.log("Loaded called");
@@ -69,6 +74,67 @@ const Messages = ({ user, chatsData }) => {
     }
   }, [router.query.message]);
 
+  // SEND NEW MESSAGE
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("messageSent", ({ newMsg }) => {
+        if (newMsg.receiver === openChatId.current) {
+          setMessages((prev) => [...prev, newMsg]);
+          setChats((prev) => {
+            const previousChat = prev.find(
+              (chat) => chat.messagesWith === newMsg.receiver
+            );
+            previousChat.lastMessage = newMsg.msg;
+            previousChat.date = newMsg.date;
+
+            return [...prev];
+          });
+        }
+      });
+
+      // RECEIVING MESSAGE WHEN CHAT IS OPEN
+      socket.current.on("newMsgReceived", ({ newMsg }) => {
+        if (newMsg.sender === openChatId.current) {
+          setMessages((prev) => [...prev, newMsg]);
+          setChats((prev) => {
+            const previousChat = prev.find(
+              (chat) => chat.messagesWith === newMsg.sender
+            );
+            previousChat.lastMessage = newMsg.msg;
+            previousChat.date = newMsg.date;
+
+            return [...prev];
+          });
+        } else {
+          // RECEIVING MESSAGE WHEN CHAT IS CLOSED && IF PREVIOUSLY MESSAGED
+          const isPreviouslyMessaged =
+            chats.filter((chat) => chat.messagesWith === newMsg.sender).length >
+            0;
+          if (isPreviouslyMessaged) {
+            setChats((prev) => {
+              const previousChat = prev.find(
+                (chat) => chat.messagesWith === newMsg.sender
+              );
+              previousChat.lastMessage = newMsg.msg;
+              previousChat.date = newMsg.date;
+
+              return [...prev];
+            });
+          }
+        }
+      });
+    }
+  }, []);
+
+  const sendMessage = (msg) => {
+    if (socket.current) {
+      socket.current.emit("sendNewMsg", {
+        userId: user._id,
+        receiverUserId: openChatId.current,
+        msg,
+      });
+    }
+  };
   return (
     <Grid>
       <Grid.Column floated="left" width="5">
@@ -81,28 +147,36 @@ const Messages = ({ user, chatsData }) => {
                 display: "flex",
                 alignItems: "center",
                 borderRadius: ".5em",
+                justifyContent: "space-between",
               }}
             >
-              <h3 style={{ fontFamily: "Raleway", marginBottom: "0px" }}>
-                Messages
-              </h3>
-              <span
-                style={{
-                  height: "18px",
-                  width: "18px",
-                  backgroundColor: "red",
-                  color: "white",
-                  borderRadius: "50%",
-                  fontFamily: "sans-serif",
-                  fontSize: "10px",
-                  marginLeft: "7px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                3
-              </span>
+              {!isSearching && (
+                <>
+                  <h3 style={{ fontFamily: "Raleway", marginBottom: "0px" }}>
+                    Messages
+                  </h3>
+                  <Icon
+                    name="search"
+                    color="grey"
+                    size="large"
+                    onClick={() => setIsSearching(true)}
+                    style={{ cursor: "pointer" }}
+                  />
+                </>
+              )}
+
+              {isSearching && (
+                <>
+                  <ChatListSearchComponent shrinken={true} />
+                  <Icon
+                    name="close"
+                    color="grey"
+                    size="large"
+                    onClick={() => setIsSearching(false)}
+                    style={{ cursor: "pointer" }}
+                  />
+                </>
+              )}
             </div>
             {chats.map((chat, i) => {
               return (
@@ -130,6 +204,7 @@ const Messages = ({ user, chatsData }) => {
               user={user}
               messagesWith={openChatId.current}
               setMessages={setMessages}
+              sendMessage={sendMessage}
             />
           )}
         </Grid.Row>
