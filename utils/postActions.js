@@ -2,7 +2,6 @@ import axios from "axios";
 import baseUrl from "../utils/baseUrl";
 import cookie from "js-cookie";
 import catchErrors from "../utils/catchErrors";
-import { mongo } from "mongoose";
 
 const Axios = axios.create({
   baseURL: `${baseUrl}/api/posts`,

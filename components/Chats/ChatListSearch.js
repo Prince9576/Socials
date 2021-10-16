@@ -7,7 +7,7 @@ import styles from "../Layout/Search.module.css";
 import cookie from "js-cookie";
 let cancel;
 
-const ChatListSearchComponent = ({ shrinken }) => {
+const ChatListSearchComponent = ({ shrinken, chats, setChats }) => {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,15 +20,15 @@ const ChatListSearchComponent = ({ shrinken }) => {
     setQuery(value);
     try {
       cancel && cancel();
-      // const CancelToken = axios.CancelToken;
+      const CancelToken = axios.CancelToken;
       const token = cookie.get("token");
       const results = await axios.get(`${baseUrl}/api/search/${value}`, {
         headers: {
           Authorization: token,
         },
-        // cancelToken: new CancelToken((canceler) => {
-        //   cancel = canceler;
-        // }),
+        cancelToken: new CancelToken((canceler) => {
+          cancel = canceler;
+        }),
       });
       if (results.data.length === 0) return setLoading(false);
       const mappedRes = results.data.map((result) => {
@@ -47,6 +47,27 @@ const ChatListSearchComponent = ({ shrinken }) => {
     }
   };
 
+  const addChat = (result) => {
+    const alreadyInChats =
+      chats.length > 0 &&
+      chats.filter((chat) => chat.messagesWith === result._id).length > 0;
+
+    if (alreadyInChats) {
+      router.push(`messages?message=${result._id}`);
+    } else {
+      const newChat = {
+        messagesWith: result._id,
+        name: result.name,
+        profilePicUrl: result.profilePicUrl,
+        lastMessage: "",
+        date: Date.now(),
+      };
+
+      setChats((prev) => [newChat, ...prev]);
+      router.push(`messages?message=${result._id}`);
+    }
+  };
+
   useEffect(() => {
     if (query.length === 0 && loading) setLoading(false);
   }, [query]);
@@ -57,7 +78,7 @@ const ChatListSearchComponent = ({ shrinken }) => {
       style={{
         width: shrinken ? "80%" : "inherit",
       }}
-      aligned="right"
+      aligned="left"
       onBlur={() => {
         if (results.length > 0) {
           setQuery("");
@@ -73,7 +94,7 @@ const ChatListSearchComponent = ({ shrinken }) => {
       minCharacters={1}
       onResultSelect={(e, data) => {
         console.log("Search Response", data);
-        router.push(`/${data.result.username}`);
+        addChat(data.result);
       }}
     ></Search>
   );
@@ -81,7 +102,7 @@ const ChatListSearchComponent = ({ shrinken }) => {
 
 const ResultRenderer = ({ _id, profilePicUrl, name, username }) => {
   return (
-    <List key={_id}>
+    <List style={{ zIndex: "10" }} key={_id}>
       <div className={styles.listItem}>
         <img
           className={styles.avatar}

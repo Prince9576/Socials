@@ -10,6 +10,7 @@ import ChatList from "../components/Chats/ChatList";
 import ChatBoard from "../components/Chats/ChatBoard";
 import { useRouter } from "next/router";
 import ChatListSearchComponent from "../components/Chats/ChatListSearch";
+import getUserInfo from "../utils/getUserInfo";
 
 const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
@@ -35,7 +36,7 @@ const Messages = ({ user, chatsData }) => {
       });
     }
 
-    if (chats.length > 0 && !router.query.message) {
+    if (chats && chats.length > 0 && !router.query.message) {
       router.push(`/messages?message=${chats[0].messagesWith}`, undefined, {
         shallow: true,
       });
@@ -67,6 +68,16 @@ const Messages = ({ user, chatsData }) => {
         });
         openChatId.current = chat.messagesWith._id;
       });
+
+      socket.current.on("noChatFound", async () => {
+        console.log("Result no chat found", res);
+        const res = await getUserInfo(router.query.message);
+        if (!res.error) {
+          setBannerData({ name: res.name, profilePicUrl: res.profilePicUrl });
+          setMessages([]);
+          openChatId.current = router.query.message;
+        }
+      });
     };
 
     if (socket.current) {
@@ -93,7 +104,7 @@ const Messages = ({ user, chatsData }) => {
       });
 
       // RECEIVING MESSAGE WHEN CHAT IS OPEN
-      socket.current.on("newMsgReceived", ({ newMsg }) => {
+      socket.current.on("newMsgReceived", async ({ newMsg }) => {
         if (newMsg.sender === openChatId.current) {
           setMessages((prev) => [...prev, newMsg]);
           setChats((prev) => {
@@ -110,6 +121,8 @@ const Messages = ({ user, chatsData }) => {
           const isPreviouslyMessaged =
             chats.filter((chat) => chat.messagesWith === newMsg.sender).length >
             0;
+
+          console.log({ isPreviouslyMessaged });
           if (isPreviouslyMessaged) {
             setChats((prev) => {
               const previousChat = prev.find(
@@ -120,6 +133,18 @@ const Messages = ({ user, chatsData }) => {
 
               return [...prev];
             });
+          } else {
+            console.log("Setting chat");
+            const { name, profilePicUrl } = await getUserInfo(newMsg.sender);
+            const newChat = {
+              messagesWith: newMsg.sender,
+              name,
+              profilePicUrl,
+              lastMessage: newMsg.msg,
+              date: newMsg.date,
+            };
+
+            setChats((prev) => [newChat, ...prev]);
           }
         }
       });
@@ -167,7 +192,11 @@ const Messages = ({ user, chatsData }) => {
 
               {isSearching && (
                 <>
-                  <ChatListSearchComponent shrinken={true} />
+                  <ChatListSearchComponent
+                    setChats={setChats}
+                    chats={chats}
+                    shrinken={true}
+                  />
                   <Icon
                     name="close"
                     color="grey"
@@ -178,16 +207,18 @@ const Messages = ({ user, chatsData }) => {
                 </>
               )}
             </div>
-            {chats.map((chat, i) => {
-              return (
-                <ChatList
-                  key={i}
-                  connectedUsers={connectedUsers}
-                  chat={chat}
-                  setChats={setChats}
-                />
-              );
-            })}
+            {chats && chats.length > 0
+              ? chats.map((chat, i) => {
+                  return (
+                    <ChatList
+                      key={i}
+                      connectedUsers={connectedUsers}
+                      chat={chat}
+                      setChats={setChats}
+                    />
+                  );
+                })
+              : "No Chats Found"}
           </Segment>
         </Comment.Group>
       </Grid.Column>
@@ -196,7 +227,7 @@ const Messages = ({ user, chatsData }) => {
           <CommonNav user={user} />
         </Grid.Row>
         <Grid.Row>
-          {router.query.message && messages.length > 0 && (
+          {router.query.message && (
             <ChatBoard
               messages={messages}
               bannerData={bannerData}

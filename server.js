@@ -33,14 +33,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("loadMessages", async ({ userId, messagesWith }) => {
+    console.log("Load Messages", { userId, messagesWith });
     const { chat, error } = await loadMessages(userId, messagesWith);
-    console.log("Event Reached", chat);
+    console.log("Load Messages Info", { chat, error });
     if (!error) {
       socket.emit("messagesLoaded", { chat });
+    } else {
+      if (error === "No_Chat_found") {
+        socket.emit("noChatFound");
+      }
     }
   });
 
   socket.on("sendNewMsg", async ({ userId, receiverUserId, msg }) => {
+    console.log("Message Trigger 1", { userId, receiverUserId });
     const { newMsg, error } = await sendNewMessage({
       userId,
       receiverUserId,
@@ -48,6 +54,7 @@ io.on("connection", (socket) => {
     });
 
     const receiverSocket = findConnectedUser(receiverUserId);
+    console.log("Message Trigger 2", { newMsg, receiverSocket });
     if (receiverSocket) {
       io.to(receiverSocket.socketId).emit("newMsgReceived", { newMsg });
     } else {

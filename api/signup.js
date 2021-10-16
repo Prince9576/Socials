@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
 const NotificationModel = require("../models/NotificationModel");
+const ChatModel = require("../models/ChatModel");
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 const userPng =
   "https://res.cloudinary.com/indersingh/image/upload/v1593464618/App/user_mklcpl.png";
@@ -86,6 +87,13 @@ router.post("/", async (req, res) => {
     });
 
     await notifications.save();
+
+    const chats = new ChatModel({
+      user: user._id,
+      chats: [],
+    });
+
+    await chats.save();
 
     const payload = { userId: user._id };
     jwt.sign(

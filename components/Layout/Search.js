@@ -7,7 +7,7 @@ import styles from "./Search.module.css";
 import cookie from "js-cookie";
 let cancel;
 
-const SearchComponent = ({ shrinken }) => {
+const SearchComponent = () => {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,9 +54,6 @@ const SearchComponent = ({ shrinken }) => {
   return (
     <Search
       className={styles["search-wrapper"]}
-      style={{
-        width: shrinken ? "80%" : "inherit",
-      }}
       aligned="right"
       onBlur={() => {
         if (results.length > 0) {
