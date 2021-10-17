@@ -1,6 +1,7 @@
 const users = [];
 
 const addUser = async (userId, socketId) => {
+  console.log("Add User called", { users });
   const user = users.find((user) => user.userId === userId);
 
   if (user && user.socketId === socketId) {
@@ -22,7 +23,9 @@ const removeUser = async (socketId) => {
   return;
 };
 
-const findConnectedUser = (userId) =>
-  users.find((user) => user.userId === userId);
+const findConnectedUser = (userId) => {
+  console.log("Find Connected users", { users, userId });
+  return users.find((user) => user.userId === userId);
+};
 
 module.exports = { addUser, removeUser, findConnectedUser };

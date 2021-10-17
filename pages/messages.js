@@ -11,6 +11,7 @@ import ChatBoard from "../components/Chats/ChatBoard";
 import { useRouter } from "next/router";
 import ChatListSearchComponent from "../components/Chats/ChatListSearch";
 import getUserInfo from "../utils/getUserInfo";
+import newMsgSound from "../utils/newMsgSound";
 
 const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
@@ -105,6 +106,7 @@ const Messages = ({ user, chatsData }) => {
 
       // RECEIVING MESSAGE WHEN CHAT IS OPEN
       socket.current.on("newMsgReceived", async ({ newMsg }) => {
+        newMsgSound();
         if (newMsg.sender === openChatId.current) {
           setMessages((prev) => [...prev, newMsg]);
           setChats((prev) => {
@@ -207,18 +209,18 @@ const Messages = ({ user, chatsData }) => {
                 </>
               )}
             </div>
-            {chats && chats.length > 0
-              ? chats.map((chat, i) => {
-                  return (
-                    <ChatList
-                      key={i}
-                      connectedUsers={connectedUsers}
-                      chat={chat}
-                      setChats={setChats}
-                    />
-                  );
-                })
-              : "No Chats Found"}
+            {chats &&
+              chats.length > 0 &&
+              chats.map((chat, i) => {
+                return (
+                  <ChatList
+                    key={i}
+                    connectedUsers={connectedUsers}
+                    chat={chat}
+                    setChats={setChats}
+                  />
+                );
+              })}
           </Segment>
         </Comment.Group>
       </Grid.Column>
@@ -227,7 +229,7 @@ const Messages = ({ user, chatsData }) => {
           <CommonNav user={user} />
         </Grid.Row>
         <Grid.Row>
-          {router.query.message && (
+          {router.query.message ? (
             <ChatBoard
               messages={messages}
               bannerData={bannerData}
@@ -237,6 +239,27 @@ const Messages = ({ user, chatsData }) => {
               setMessages={setMessages}
               sendMessage={sendMessage}
             />
+          ) : (
+            <div
+              style={{
+                width: "40%",
+                margin: "8rem auto",
+                textAlign: "center",
+                color: "grey",
+              }}
+            >
+              <Icon name="comments" color="grey" size="huge" />
+              <h3
+                style={{
+                  margin: "0",
+                }}
+              >
+                No Chats Found
+              </h3>
+              <div style={{ fontSize: "1rem" }}>
+                Start conversing to see your messages here.
+              </div>
+            </div>
           )}
         </Grid.Row>
       </Grid.Column>

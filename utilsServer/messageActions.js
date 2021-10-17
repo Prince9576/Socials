@@ -56,7 +56,7 @@ const sendNewMessageHelper = async (newMsg, person1, person2Id) => {
     await person1.save();
   } else {
     const newChat = { messagesWith: person2Id, chat: [newMsg] };
-    person1.chat.unshift(newChat);
+    person1.chats.unshift(newChat);
     await person1.save();
   }
 };
