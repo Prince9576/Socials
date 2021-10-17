@@ -7,11 +7,12 @@ const Message = ({
   setMessages,
   messagesWith,
   senderProfilePic,
+  divRef,
 }) => {
   const ifYouSender = message.sender === user._id;
 
   return (
-    <div className="bubbleWrapper">
+    <div className="bubbleWrapper" ref={divRef}>
       <div className={ifYouSender ? "inlineContainer own" : "inlineContainer"}>
         <img
           className="inlineIcon"

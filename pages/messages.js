@@ -19,10 +19,15 @@ const Messages = ({ user, chatsData }) => {
   const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
   const socket = useRef();
+  const divRef = useRef();
 
   const [messages, setMessages] = useState([]);
   const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" });
   const openChatId = useRef("");
+
+  const scrollToBottom = (divRef) => {
+    divRef.current && divRef.current.scrollIntoView({ behaviour: "smooth" });
+  };
 
   // CONNECTION
   useEffect(() => {
@@ -62,12 +67,14 @@ const Messages = ({ user, chatsData }) => {
 
       socket.current.on("messagesLoaded", ({ chat }) => {
         console.log("Messages Loaded", { chat });
+
         setMessages(chat.chat);
         setBannerData({
           name: chat.messagesWith.name,
           profilePicUrl: chat.messagesWith.profilePicUrl,
         });
         openChatId.current = chat.messagesWith._id;
+        divRef.current && scrollToBottom(divRef);
       });
 
       socket.current.on("noChatFound", async () => {
@@ -152,6 +159,10 @@ const Messages = ({ user, chatsData }) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    divRef.current && scrollToBottom(divRef);
+  }, [messages]);
 
   const sendMessage = (msg) => {
     if (socket.current) {
@@ -238,6 +249,7 @@ const Messages = ({ user, chatsData }) => {
               messagesWith={openChatId.current}
               setMessages={setMessages}
               sendMessage={sendMessage}
+              divRef={divRef}
             />
           ) : (
             <div

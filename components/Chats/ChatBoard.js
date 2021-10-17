@@ -11,6 +11,7 @@ const ChatBoard = ({
   messagesWith,
   setMessages,
   sendMessage,
+  divRef,
 }) => {
   console.log("Messages", messages);
   return (
@@ -46,6 +47,7 @@ const ChatBoard = ({
               messagesWith={messagesWith}
               senderProfilePic={bannerData.profilePicUrl}
               setMessages={setMessages}
+              divRef={divRef}
             />
           );
         })}
