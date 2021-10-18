@@ -3,7 +3,7 @@ import React from "react";
 import { Comment, Icon, List } from "semantic-ui-react";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
 
-const ChatList = ({ user, chat, setChats, connectedUsers }) => {
+const ChatList = ({ user, chat, setChats, connectedUsers, deleteChat }) => {
   const isOnline =
     connectedUsers.length > 0 &&
     connectedUsers.filter((user) => user.userId === chat.messagesWith).length >
@@ -57,7 +57,14 @@ const ChatList = ({ user, chat, setChats, connectedUsers }) => {
                   cursor: "pointer",
                 }}
               >
-                <Icon name="trash alternate" color="red" />
+                <Icon
+                  name="trash alternate"
+                  color="red"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    deleteChat(chat.messagesWith);
+                  }}
+                />
               </div>
             </Comment.Metadata>
             <Comment.Text>

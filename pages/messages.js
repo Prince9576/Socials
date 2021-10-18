@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import ChatListSearchComponent from "../components/Chats/ChatListSearch";
 import getUserInfo from "../utils/getUserInfo";
 import newMsgSound from "../utils/newMsgSound";
+import cookie from "js-cookie";
 
 const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
@@ -173,6 +174,33 @@ const Messages = ({ user, chatsData }) => {
       });
     }
   };
+
+  const deleteChat = async (messagesWith) => {
+    try {
+      const currentChat = chats.find(
+        (chat) => chat.messagesWith === messagesWith
+      );
+      if (!currentChat.lastMessage) {
+        setChats((prev) =>
+          prev.filter((chat) => chat.messagesWith !== messagesWith)
+        );
+        router.push("/messages");
+        return;
+      }
+      await axios.delete(`${baseUrl}/api/chats/${messagesWith}`, {
+        headers: {
+          Authorization: cookie.get("token"),
+        },
+      });
+      setChats((prev) =>
+        prev.filter((chat) => chat.messagesWith !== messagesWith)
+      );
+      router.push("/messages", undefined, { shallow: true });
+    } catch (error) {
+      console.error(error);
+      alert("Error Deleting Messages");
+    }
+  };
   return (
     <Grid>
       <Grid.Column floated="left" width="5">
@@ -229,6 +257,7 @@ const Messages = ({ user, chatsData }) => {
                     connectedUsers={connectedUsers}
                     chat={chat}
                     setChats={setChats}
+                    deleteChat={deleteChat}
                   />
                 );
               })}
