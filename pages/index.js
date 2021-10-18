@@ -1,5 +1,6 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { parseCookies } from "nookies";
+import io from "socket.io-client";
 import baseUrl from "../utils/baseUrl";
 import axios from "axios";
 import CardPost from "../components/Posts/CardPost";
@@ -16,6 +17,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import cookies from "js-cookie";
 import MessageToastr from "../components/Common/MessageToastr";
 import { NoPosts } from "../components/Layout/NoData";
+import getUserInfo from "../utils/getUserInfo";
+import MessageNotificationModal from "../components/Chats/MessageNotificationModal";
+import newMsgSound from "../utils/newMsgSound";
 
 function addStyles() {
   return {
@@ -31,7 +35,36 @@ const Home = ({ user, postData, errorLoading }) => {
   const [showToastr, setShowToastr] = useState({ show: false, type: "" });
   const [hasMore, setHasMore] = useState(true);
   const [pageNumber, setPageNumber] = useState(2);
+  const [newMessageReceived, setNewMessageReceived] = useState(null);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const socket = useRef();
+  useEffect(() => {
+    if (!socket.current) {
+      socket.current = io(baseUrl);
+    }
+    document.title = `Welcome, ${user.name.split(" ")[0]}`;
 
+    if (socket.current) {
+      socket.current.emit("join", { userId: user._id });
+      socket.current.on("newMsgReceived", async ({ newMsg }) => {
+        const { name, profilePicUrl } = await getUserInfo(user._id);
+        setNewMessageReceived({
+          ...newMsg,
+          senderName: name,
+          senderProfilePicUrl: profilePicUrl,
+        });
+        setShowNewMessageModal(true);
+        newMsgSound();
+      });
+    }
+
+    return () => {
+      if (socket.current) {
+        socket.current.emit("disconnect");
+        socket.current.off();
+      }
+    };
+  }, []);
   const fetchDataOnScroll = async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/posts`, {
@@ -62,6 +95,15 @@ const Home = ({ user, postData, errorLoading }) => {
 
   return (
     <Fragment>
+      {showNewMessageModal && newMessageReceived !== null && (
+        <MessageNotificationModal
+          socket={socket}
+          newMessageReceived={newMessageReceived}
+          showNewMessageModal={showNewMessageModal}
+          setShowNewMessageModal={setShowNewMessageModal}
+          user={user}
+        />
+      )}
       <Segment>
         <CreatePost setPosts={setPosts} user={user} />
         <Divider />

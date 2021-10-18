@@ -26,7 +26,9 @@ router.get("/", authMiddleware, async (req, res) => {
         });
       return res.status(200).send(notifications);
     }
-    const notifications = await NotificationModel.findOne({ user: userId });
+    const notifications = await NotificationModel.findOne({
+      user: userId,
+    }).populate({ path: "notifications.user", model: UserModel });
     return res.status(200).send(notifications);
   } catch (error) {
     console.error("Notification GET error", error);

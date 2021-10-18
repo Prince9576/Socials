@@ -3,6 +3,7 @@ import { Divider, Feed } from "semantic-ui-react";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
 
 const FollowerNotificaiton = ({ notification }) => {
+  console.log("Follower Notification", { notification });
   return (
     <>
       <Feed.Event>

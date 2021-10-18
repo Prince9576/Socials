@@ -4,7 +4,6 @@ const newMsgSound = async () => {
     sound && (await sound.play());
   } catch (error) {
     console.error(error);
-    alert("New Message");
   }
 };
 

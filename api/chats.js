@@ -33,6 +33,16 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
+router.post("/", authMiddleware, async (req, res) => {
+  console.log("Setting msg to read");
+  const { userId } = req;
+  const user = await UserModel.findById(userId);
+  if (user.unreadMessage) {
+    console.log("Setting Msg to read");
+    user.unreadMessage = false;
+    await user.save();
+  }
+});
 router.get("/user/:userToFindId", authMiddleware, async (req, res) => {
   try {
     const { userToFindId } = req.params;

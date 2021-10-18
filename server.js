@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
       socket.emit("connectedUsers", {
         users: users.filter((user) => user.userId !== userId),
       });
-    }, 10000);
+    }, 2000);
   });
 
   socket.on("loadMessages", async ({ userId, messagesWith }) => {
@@ -60,10 +60,29 @@ io.on("connection", (socket) => {
     } else {
       await setMsgToUnread(receiverUserId);
     }
-    if (newMsg) {
-      socket.emit("messageSent", { newMsg });
-    }
+
+    !error && socket.emit("messageSent", { newMsg });
   });
+
+  socket.on(
+    "sendNewMessageFromPopup",
+    async ({ userId, receiverUserId, msg }) => {
+      const { newMsg, error } = await sendNewMessage({
+        userId,
+        receiverUserId,
+        msg,
+      });
+
+      const receiverSocket = findConnectedUser(receiverUserId);
+      if (receiverSocket) {
+        io.to(receiverSocket.socketId).emit("newMsgReceived", { newMsg });
+      } else {
+        await setMsgToUnread(receiverUserId);
+      }
+
+      !error && socket.emit("messageSentFromPopup", { newMsg });
+    }
+  );
 
   socket.on("disconnect", async () => {
     await removeUser(socket.id);

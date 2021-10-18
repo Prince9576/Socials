@@ -34,9 +34,7 @@ const Notifications = ({
         console.error("Notifications Read ", error);
       }
     };
-    return () => {
-      notificationsRead();
-    };
+    notificationsRead();
   }, []);
 
   return (

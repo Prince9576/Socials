@@ -49,6 +49,24 @@ const Messages = ({ user, chatsData }) => {
       });
     }
 
+    const messagesRead = async () => {
+      try {
+        const res = await axios.post(
+          `${baseUrl}/api/chats`,
+          {},
+          {
+            headers: {
+              Authorization: cookie.get("token"),
+            },
+          }
+        );
+        console.log("res", res);
+      } catch (error) {
+        console.error("Messages Read ", error);
+      }
+    };
+    messagesRead();
+
     return () => {
       if (socket.current) {
         socket.current.emit("disconnect");
@@ -195,7 +213,7 @@ const Messages = ({ user, chatsData }) => {
       setChats((prev) =>
         prev.filter((chat) => chat.messagesWith !== messagesWith)
       );
-      router.push("/messages", undefined, { shallow: true });
+      router.push("/messages");
     } catch (error) {
       console.error(error);
       alert("Error Deleting Messages");
