@@ -6,38 +6,69 @@ import { List, Icon } from "semantic-ui-react";
 import { Fragment } from "react";
 import { logoutUser } from "../../utils/authUser";
 
-const SideMenu = (props) => {
+const SideMenu = ({ user, pc = true, mobile = false }) => {
   let unreadMessage, unreadNotification, email, username;
   const router = useRouter();
   const isActive = (route) => router.pathname === route;
-  if (props.user) {
-    unreadMessage = props.user.unreadMessage;
-    unreadNotification = props.user.unreadNotification;
-    email = props.user.email;
-    username = props.user.username;
+  const itemClassName = mobile ? "item-mobile" : "item";
+
+  if (user) {
+    unreadMessage = user.unreadMessage;
+    unreadNotification = user.unreadNotification;
+    email = user.email;
+    username = user.username;
   }
   return (
     <Fragment>
-      <List size="small" verticalAlign="middle" selection>
-        {props.user && (
+      <List
+        style={
+          mobile
+            ? {
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-evenly",
+                position: "fixed",
+                bottom: "0",
+                left: "0",
+                background: "#1b1c1d",
+              }
+            : {}
+        }
+        horizontal={mobile}
+        celled={mobile}
+        inverted={mobile}
+        size="small"
+        verticalAlign="middle"
+        selection
+      >
+        {user && (
           <>
             <Link href="/">
-              <List.Item className={styles.item} active={isActive("/")}>
+              <List.Item
+                className={styles[itemClassName]}
+                active={isActive("/")}
+              >
                 <Icon
                   name="home"
                   size="large"
                   color={isActive("/") && "blue"}
+                  verticalAlign="middle"
                 />
                 <List.Content>
-                  <List.Header
-                    className={styles.header}
-                    content="Home"
-                  ></List.Header>
+                  {pc && (
+                    <List.Header
+                      className={styles.header}
+                      content="Home"
+                    ></List.Header>
+                  )}
                 </List.Content>
               </List.Item>
             </Link>
             <Link href="/messages">
-              <List.Item className={styles.item} active={isActive("/messages")}>
+              <List.Item
+                className={styles[itemClassName]}
+                active={isActive("/messages")}
+              >
                 <Icon
                   name={unreadMessage ? "hand point right" : "mail outline"}
                   size="large"
@@ -47,16 +78,18 @@ const SideMenu = (props) => {
                   }
                 />
                 <List.Content>
-                  <List.Header
-                    className={styles.header}
-                    content="Messages"
-                  ></List.Header>
+                  {pc && (
+                    <List.Header
+                      className={styles.header}
+                      content="Messages"
+                    ></List.Header>
+                  )}
                 </List.Content>
               </List.Item>
             </Link>
             <Link href="/notifications">
               <List.Item
-                className={styles.item}
+                className={styles[itemClassName]}
                 active={isActive("/notifications")}
               >
                 <Icon
@@ -68,16 +101,18 @@ const SideMenu = (props) => {
                   }
                 />
                 <List.Content>
-                  <List.Header
-                    className={styles.header}
-                    content="Notifications"
-                  ></List.Header>
+                  {pc && (
+                    <List.Header
+                      className={styles.header}
+                      content="Notifications"
+                    ></List.Header>
+                  )}
                 </List.Content>
               </List.Item>
             </Link>
             <Link href={`/${username}`}>
               <List.Item
-                className={styles.item}
+                className={styles[itemClassName]}
                 active={router.query.username === username}
               >
                 <Icon
@@ -86,10 +121,12 @@ const SideMenu = (props) => {
                   color={router.query.username === username && "blue"}
                 />
                 <List.Content>
-                  <List.Header
-                    className={styles.header}
-                    content="Account"
-                  ></List.Header>
+                  {pc && (
+                    <List.Header
+                      className={styles.header}
+                      content="Account"
+                    ></List.Header>
+                  )}
                 </List.Content>
               </List.Item>
             </Link>
@@ -97,48 +134,60 @@ const SideMenu = (props) => {
               onClick={() => {
                 logoutUser(email);
               }}
-              className={styles.item}
+              className={styles[itemClassName]}
             >
               <Icon name="log out" size="large" />
               <List.Content>
-                <List.Header
-                  className={styles.header}
-                  content="Logout"
-                ></List.Header>
+                {pc && (
+                  <List.Header
+                    className={styles.header}
+                    content="Logout"
+                  ></List.Header>
+                )}
               </List.Content>
             </List.Item>{" "}
           </>
         )}
 
-        {!props.user && (
+        {!user && (
           <>
             <Link href="/signup">
-              <List.Item className={styles.item} active={isActive("/signup")}>
+              <List.Item
+                className={styles[itemClassName]}
+                active={isActive("/signup")}
+              >
                 <Icon
                   name="signup"
                   size="large"
                   color={isActive("/signup") && "blue"}
                 />
                 <List.Content>
-                  <List.Header
-                    className={styles.header}
-                    content="Signup"
-                  ></List.Header>
+                  {pc && (
+                    <List.Header
+                      className={styles.header}
+                      content="Signup"
+                    ></List.Header>
+                  )}
                 </List.Content>
               </List.Item>
             </Link>
             <Link href="/login">
-              <List.Item className={styles.item} active={isActive("/login")}>
+              <List.Item
+                className={styles[itemClassName]}
+                active={isActive("/login")}
+              >
                 <Icon
                   name="sign in"
                   size="large"
                   color={isActive("/login") && "blue"}
                 />
                 <List.Content>
-                  <List.Header
-                    className={styles.header}
-                    content="Login"
-                  ></List.Header>
+                  {pc && (
+                    <List.Header
+                      className={styles.header}
+                      content="Login"
+                    ></List.Header>
+                  )}
                 </List.Content>
               </List.Item>
             </Link>{" "}

@@ -14,7 +14,7 @@ import getUserInfo from "../utils/getUserInfo";
 import newMsgSound from "../utils/newMsgSound";
 import cookie from "js-cookie";
 
-const Messages = ({ user, chatsData }) => {
+const Messages = ({ user, chatsData, media }) => {
   const [chats, setChats] = useState(chatsData);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -25,6 +25,8 @@ const Messages = ({ user, chatsData }) => {
   const [messages, setMessages] = useState([]);
   const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" });
   const openChatId = useRef("");
+
+  console.log("Media", media);
 
   const scrollToBottom = (divRef) => {
     divRef.current && divRef.current.scrollIntoView({ behaviour: "smooth" });
@@ -39,7 +41,6 @@ const Messages = ({ user, chatsData }) => {
       socket.current.emit("join", { userId: user._id });
       socket.current.on("connectedUsers", ({ users }) => {
         users.length > 0 && setConnectedUsers(users);
-        console.log("Online users", users);
       });
     }
 

@@ -8,3 +8,9 @@
   margin-bottom: 10px !important;
   border-radius: 0px !important;
 }
+.item-mobile {
+  padding: 1em !important;
+  border: none !important;
+  text-align: center;
+  border-radius: 0px !important;
+}

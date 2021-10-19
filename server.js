@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
       socket.emit("connectedUsers", {
         users: users.filter((user) => user.userId !== userId),
       });
-    }, 2000);
+    }, 1000);
   });
 
   socket.on("loadMessages", async ({ userId, messagesWith }) => {
