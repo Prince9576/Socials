@@ -3,7 +3,14 @@ import React from "react";
 import { Comment, Icon, List } from "semantic-ui-react";
 import calculateTimeDiff from "../../utils/calculateTimeDiff";
 
-const ChatList = ({ user, chat, setChats, connectedUsers, deleteChat }) => {
+const ChatList = ({
+  user,
+  chat,
+  setChats,
+  connectedUsers,
+  deleteChat,
+  setSidebarVisible,
+}) => {
   const isOnline =
     connectedUsers.length > 0 &&
     connectedUsers.filter((user) => user.userId === chat.messagesWith).length >
@@ -19,6 +26,7 @@ const ChatList = ({ user, chat, setChats, connectedUsers, deleteChat }) => {
           router.push(`/messages?message=${chat.messagesWith}`, undefined, {
             shallow: true,
           });
+          setSidebarVisible && setSidebarVisible(false);
         }}
         style={{ padding: "1rem" }}
       >

@@ -10,15 +10,8 @@ const ChatSidebar = ({
   setChats,
   deleteChat,
   connectedUsers,
+  setSidebarVisible,
 }) => {
-  console.log({
-    isSearching,
-    setIsSearching,
-    chats,
-    setChats,
-    deleteChat,
-    connectedUsers,
-  });
   return (
     <Comment.Group size="big">
       <Segment raised style={{ overflow: "auto", height: "44.75rem" }}>
@@ -74,6 +67,7 @@ const ChatSidebar = ({
                 chat={chat}
                 setChats={setChats}
                 deleteChat={deleteChat}
+                setSidebarVisible={setSidebarVisible}
               />
             );
           })}

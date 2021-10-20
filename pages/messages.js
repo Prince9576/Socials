@@ -4,43 +4,38 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
-import { Segment, Comment, Grid, Icon } from "semantic-ui-react";
+import { Grid, Icon, Sidebar } from "semantic-ui-react";
 import CommonNav from "../components/Layout/CommonNav";
-import ChatList from "../components/Chats/ChatList";
 import ChatBoard from "../components/Chats/ChatBoard";
 import { useRouter } from "next/router";
-import ChatListSearchComponent from "../components/Chats/ChatListSearch";
 import getUserInfo from "../utils/getUserInfo";
 import newMsgSound from "../utils/newMsgSound";
 import cookie from "js-cookie";
-
-import { createMedia } from "@artsy/fresnel";
 import ChatSidebar from "../components/Chats/ChatSidebar";
 import { NoChats } from "../components/Layout/NoData";
+import { Media } from "../utils/Media.tsx";
 
 const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const router = useRouter();
   const socket = useRef();
   const divRef = useRef();
 
+  const iconStyle = {
+    position: "fixed",
+    zIndex: 2,
+    top: "50%",
+    transform: "translate(-50%,-50%)",
+    fontSize: "3em",
+  };
+
   const [messages, setMessages] = useState([]);
   const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" });
   const openChatId = useRef("");
-
-  // const AppMedia = createMedia({
-  //   breakpoints: {
-  //     zero: 0,
-  //     mobile: 549,
-  //     tab: 768,
-  //     dekstop: 1080,
-  //   },
-  // });
-
-  // const { Media, MediaContextProvider } = AppMedia;
 
   const scrollToBottom = (divRef) => {
     divRef.current && divRef.current.scrollIntoView({ behaviour: "smooth" });
@@ -235,40 +230,108 @@ const Messages = ({ user, chatsData }) => {
     }
   };
   return (
-    <Grid>
-      <Grid.Column floated="left" width="5">
-        <ChatSidebar
-          isSearching={isSearching}
-          setIsSearching={setIsSearching}
-          chats={chats}
-          setChats={setChats}
-          deleteChat={deleteChat}
-          connectedUsers={connectedUsers}
-        />
-      </Grid.Column>
-
-      <Grid.Column floated="right" width="11">
-        <Grid.Row>
-          <CommonNav user={user} />
-        </Grid.Row>
-        <Grid.Row>
-          {router.query.message ? (
-            <ChatBoard
-              messages={messages}
-              bannerData={bannerData}
-              socket={socket}
-              user={user}
-              messagesWith={openChatId.current}
-              setMessages={setMessages}
-              sendMessage={sendMessage}
-              divRef={divRef}
+    <>
+      <Media greaterThanOrEqual="tab">
+        <Grid>
+          <Grid.Column floated="left" width="5">
+            <ChatSidebar
+              isSearching={isSearching}
+              setIsSearching={setIsSearching}
+              chats={chats}
+              setChats={setChats}
+              deleteChat={deleteChat}
+              connectedUsers={connectedUsers}
             />
-          ) : (
-            <NoChats />
-          )}
-        </Grid.Row>
-      </Grid.Column>
-    </Grid>
+          </Grid.Column>
+
+          <Grid.Column floated="right" width="11">
+            <Grid.Row>
+              <CommonNav user={user} />
+            </Grid.Row>
+            <Grid.Row>
+              {router.query.message ? (
+                <ChatBoard
+                  messages={messages}
+                  bannerData={bannerData}
+                  socket={socket}
+                  user={user}
+                  messagesWith={openChatId.current}
+                  setMessages={setMessages}
+                  sendMessage={sendMessage}
+                  divRef={divRef}
+                />
+              ) : (
+                <NoChats />
+              )}
+            </Grid.Row>
+          </Grid.Column>
+        </Grid>
+      </Media>
+
+      <Media lessThan="tab">
+        <Grid>
+          <Grid.Column floated="right" width="16">
+            {!sidebarVisible && (
+              <Icon
+                name="arrow alternate circle right"
+                color="teal"
+                onClick={() => setSidebarVisible((prev) => !prev)}
+                style={iconStyle}
+              />
+            )}
+            {sidebarVisible && (
+              <Icon
+                name="arrow alternate circle left"
+                color="teal"
+                onClick={() => setSidebarVisible((prev) => !prev)}
+                style={iconStyle}
+              />
+            )}
+            <Sidebar.Pushable>
+              <Sidebar
+                animation="overlay"
+                inverted
+                onHide={() => setSidebarVisible(false)}
+                vertical
+                visible={sidebarVisible}
+                style={{ width: "100%" }}
+              >
+                <ChatSidebar
+                  isSearching={isSearching}
+                  setIsSearching={setIsSearching}
+                  chats={chats}
+                  setChats={setChats}
+                  deleteChat={deleteChat}
+                  connectedUsers={connectedUsers}
+                  setSidebarVisible={setSidebarVisible}
+                />
+              </Sidebar>
+              <Sidebar.Pusher>
+                <Grid.Row>
+                  <CommonNav user={user} />
+                </Grid.Row>
+                <Grid.Row>
+                  {router.query.message ? (
+                    <ChatBoard
+                      messages={messages}
+                      bannerData={bannerData}
+                      socket={socket}
+                      user={user}
+                      messagesWith={openChatId.current}
+                      setMessages={setMessages}
+                      sendMessage={sendMessage}
+                      divRef={divRef}
+                    />
+                  ) : (
+                    <NoChats />
+                  )}
+                </Grid.Row>
+              </Sidebar.Pusher>
+            </Sidebar.Pushable>
+          </Grid.Column>
+        </Grid>
+      </Media>
+    </>
   );
 };
 

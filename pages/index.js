@@ -20,6 +20,7 @@ import { NoPosts } from "../components/Layout/NoData";
 import getUserInfo from "../utils/getUserInfo";
 import MessageNotificationModal from "../components/Chats/MessageNotificationModal";
 import newMsgSound from "../utils/newMsgSound";
+import { Media } from "../utils/Media.tsx";
 
 function addStyles() {
   return {
@@ -105,7 +106,12 @@ const Home = ({ user, postData, errorLoading }) => {
         />
       )}
       <Segment>
-        <CreatePost setPosts={setPosts} user={user} />
+        <Media greaterThanOrEqual="tab">
+          <CreatePost setPosts={setPosts} user={user} mobile={false} />
+        </Media>
+        <Media lessThan="tab">
+          <CreatePost setPosts={setPosts} user={user} mobile={true} />
+        </Media>
         <Divider />
         <Fragment>
           {posts.length === 0 || errorLoading ? (

@@ -2,7 +2,7 @@ import React, { Fragment, useRef, useState } from "react";
 import { Button, Form, Image, Message, Popup } from "semantic-ui-react";
 import uploadPic from "../../utils/uploadPicToCloudinary";
 import { submitNewPost } from "../../utils/postActions";
-const CreatePost = ({ user, setPosts }) => {
+const CreatePost = ({ user, setPosts, mobile = false }) => {
   const [newPost, setNewPost] = useState({ text: "", location: "" });
   const [loading, setLoading] = useState(false);
   const [locationPopupClose, setLocationPopupClose] = useState();
@@ -64,15 +64,15 @@ const CreatePost = ({ user, setPosts }) => {
           header="Oops"
         />
 
-        <Form.Group>
-          <Image src={user.profilePicUrl} circular avatar inline />
+        <Form.Group style={{ justifyContent: mobile ? "flex-end" : "normal" }}>
+          {!mobile && <Image src={user.profilePicUrl} circular avatar inline />}
           <Form.TextArea
             placeholder="Whats Happening ?"
             name="text"
             value={newPost.text}
             onChange={handleChnage}
             rows={5}
-            width={14}
+            width={mobile ? 11 : 14}
             style={{ flex: "0 0 87%" }}
           ></Form.TextArea>
 
@@ -88,10 +88,11 @@ const CreatePost = ({ user, setPosts }) => {
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
+              flexDirection: mobile ? "row" : "column",
               justifyContent: "space-between",
               flex: "0 0 8%",
               alignItems: "end",
+              marginTop: mobile ? "1rem" : "0",
             }}
           >
             <Popup
