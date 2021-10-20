@@ -74,3 +74,28 @@ export const NoNotifications = () => {
     />
   );
 };
+
+export const NoChats = () => {
+  return (
+    <div
+      style={{
+        width: "40%",
+        margin: "8rem auto",
+        textAlign: "center",
+        color: "grey",
+      }}
+    >
+      <Icon name="comments" color="grey" size="huge" />
+      <h3
+        style={{
+          margin: "0",
+        }}
+      >
+        No Chats Found
+      </h3>
+      <div style={{ fontSize: "1rem" }}>
+        Start conversing to see your messages here.
+      </div>
+    </div>
+  );
+};

@@ -5,12 +5,15 @@ import axios from "axios";
 import { redirectUser } from "../utils/authUser";
 import { parseCookies, destroyCookie } from "nookies";
 import baseUrl from "../utils/baseUrl";
+import { MediaContextProvider } from "../utils/Media.tsx";
 
 const MyApp = ({ Component, pageProps }) => {
   return (
-    <Layout {...pageProps}>
-      <Component {...pageProps}></Component>
-    </Layout>
+    <MediaContextProvider>
+      <Layout {...pageProps}>
+        <Component {...pageProps}></Component>
+      </Layout>
+    </MediaContextProvider>
   );
 };
 

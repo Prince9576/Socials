@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
-import { Comment, Grid, Icon, Segment } from "semantic-ui-react";
+import { Segment, Comment, Grid, Icon } from "semantic-ui-react";
 import CommonNav from "../components/Layout/CommonNav";
 import ChatList from "../components/Chats/ChatList";
 import ChatBoard from "../components/Chats/ChatBoard";
@@ -14,10 +14,15 @@ import getUserInfo from "../utils/getUserInfo";
 import newMsgSound from "../utils/newMsgSound";
 import cookie from "js-cookie";
 
-const Messages = ({ user, chatsData, media }) => {
+import { createMedia } from "@artsy/fresnel";
+import ChatSidebar from "../components/Chats/ChatSidebar";
+import { NoChats } from "../components/Layout/NoData";
+
+const Messages = ({ user, chatsData }) => {
   const [chats, setChats] = useState(chatsData);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+
   const router = useRouter();
   const socket = useRef();
   const divRef = useRef();
@@ -26,7 +31,16 @@ const Messages = ({ user, chatsData, media }) => {
   const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" });
   const openChatId = useRef("");
 
-  console.log("Media", media);
+  // const AppMedia = createMedia({
+  //   breakpoints: {
+  //     zero: 0,
+  //     mobile: 549,
+  //     tab: 768,
+  //     dekstop: 1080,
+  //   },
+  // });
+
+  // const { Media, MediaContextProvider } = AppMedia;
 
   const scrollToBottom = (divRef) => {
     divRef.current && divRef.current.scrollIntoView({ behaviour: "smooth" });
@@ -223,66 +237,16 @@ const Messages = ({ user, chatsData, media }) => {
   return (
     <Grid>
       <Grid.Column floated="left" width="5">
-        <Comment.Group size="big">
-          <Segment raised style={{ overflow: "auto", height: "44.75rem" }}>
-            <div
-              style={{
-                padding: "1rem",
-                backgroundColor: "#f4f4f4",
-                display: "flex",
-                alignItems: "center",
-                borderRadius: ".5em",
-                justifyContent: "space-between",
-              }}
-            >
-              {!isSearching && (
-                <>
-                  <h3 style={{ fontFamily: "Raleway", marginBottom: "0px" }}>
-                    Messages
-                  </h3>
-                  <Icon
-                    name="search"
-                    color="grey"
-                    size="large"
-                    onClick={() => setIsSearching(true)}
-                    style={{ cursor: "pointer" }}
-                  />
-                </>
-              )}
-
-              {isSearching && (
-                <>
-                  <ChatListSearchComponent
-                    setChats={setChats}
-                    chats={chats}
-                    shrinken={true}
-                  />
-                  <Icon
-                    name="close"
-                    color="grey"
-                    size="large"
-                    onClick={() => setIsSearching(false)}
-                    style={{ cursor: "pointer" }}
-                  />
-                </>
-              )}
-            </div>
-            {chats &&
-              chats.length > 0 &&
-              chats.map((chat, i) => {
-                return (
-                  <ChatList
-                    key={i}
-                    connectedUsers={connectedUsers}
-                    chat={chat}
-                    setChats={setChats}
-                    deleteChat={deleteChat}
-                  />
-                );
-              })}
-          </Segment>
-        </Comment.Group>
+        <ChatSidebar
+          isSearching={isSearching}
+          setIsSearching={setIsSearching}
+          chats={chats}
+          setChats={setChats}
+          deleteChat={deleteChat}
+          connectedUsers={connectedUsers}
+        />
       </Grid.Column>
+
       <Grid.Column floated="right" width="11">
         <Grid.Row>
           <CommonNav user={user} />
@@ -300,26 +264,7 @@ const Messages = ({ user, chatsData, media }) => {
               divRef={divRef}
             />
           ) : (
-            <div
-              style={{
-                width: "40%",
-                margin: "8rem auto",
-                textAlign: "center",
-                color: "grey",
-              }}
-            >
-              <Icon name="comments" color="grey" size="huge" />
-              <h3
-                style={{
-                  margin: "0",
-                }}
-              >
-                No Chats Found
-              </h3>
-              <div style={{ fontSize: "1rem" }}>
-                Start conversing to see your messages here.
-              </div>
-            </div>
+            <NoChats />
           )}
         </Grid.Row>
       </Grid.Column>

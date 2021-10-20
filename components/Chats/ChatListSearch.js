@@ -53,7 +53,9 @@ const ChatListSearchComponent = ({ shrinken, chats, setChats }) => {
       chats.filter((chat) => chat.messagesWith === result._id).length > 0;
 
     if (alreadyInChats) {
-      router.push(`messages?message=${result._id}`);
+      router.push(`messages?message=${result._id}`, undefined, {
+        shallow: true,
+      });
     } else {
       const newChat = {
         messagesWith: result._id,
@@ -63,8 +65,11 @@ const ChatListSearchComponent = ({ shrinken, chats, setChats }) => {
         date: Date.now(),
       };
 
+      console.log("Setting Chat", newChat);
       setChats((prev) => [newChat, ...prev]);
-      router.push(`messages?message=${result._id}`);
+      router.push(`messages?message=${result._id}`, undefined, {
+        shallow: true,
+      });
     }
   };
 
