@@ -9,6 +9,7 @@ const ProfileHeader = ({
   loading,
   user,
   setUserFollowStats,
+  mobile,
 }) => {
   const [followLoading, setFollowLoading] = useState(false);
   return (
@@ -62,9 +63,9 @@ const ProfileHeader = ({
         </div>
       </div>
       <div className={styles["info-container"]}>
-        <div className={styles.flex}>
+        <div className={mobile ? styles["flex-mobile"] : styles.flex}>
           <div className={styles.name}>{profile.user.name}</div>
-          <div className={styles.socials}>
+          <div className={mobile ? styles["socials-mobile"] : styles.socials}>
             <Popup
               on="hover"
               inverted

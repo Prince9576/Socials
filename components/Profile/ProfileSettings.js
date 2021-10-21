@@ -10,7 +10,7 @@ import {
 } from "semantic-ui-react";
 import { toggleMessagePopup, updatePassword } from "../../utils/profileActions";
 
-const ProfileSettings = ({ newMessagePopup }) => {
+const ProfileSettings = ({ newMessagePopup, mobile }) => {
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -28,7 +28,7 @@ const ProfileSettings = ({ newMessagePopup }) => {
         <Message success header="Updated Successfully" icon="check circle" />
       )}
       <Divider hidden />
-      <List size="big" animated>
+      <List size="big" animated={!mobile}>
         <List.Item>
           <List.Icon name="user secret" size="large" verticalAlign="middle" />
           <List.Content verticalAlign="middle">
@@ -43,6 +43,7 @@ const ProfileSettings = ({ newMessagePopup }) => {
             <UpdatePassword
               setShowUpdatePassword={setShowUpdatePassword}
               setSuccess={setSuccess}
+              mobile={mobile}
             />
           )}
         </List.Item>
@@ -93,7 +94,7 @@ const ProfileSettings = ({ newMessagePopup }) => {
   );
 };
 
-const UpdatePassword = ({ setSuccess, setShowUpdatePassword }) => {
+const UpdatePassword = ({ setSuccess, setShowUpdatePassword, mobile }) => {
   const [userPasswords, setUserPasswords] = useState({
     currentPassword: "",
     newPassword: "",
@@ -176,7 +177,7 @@ const UpdatePassword = ({ setSuccess, setShowUpdatePassword }) => {
         ></Form.Input>
 
         <Divider hidden />
-        <ButtonGroup widths={2} style={{ maxWidth: "40%" }}>
+        <ButtonGroup widths={2} style={{ maxWidth: mobile ? "100%" : "40%" }}>
           <Button
             disabled={loading || currentPassword === "" || newPassword === ""}
             compact

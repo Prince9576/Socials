@@ -35,7 +35,16 @@
   display: flex;
   justify-content: space-between;
 }
-.socials .icon {
+.socials-mobile {
+  width: 80%;
+  margin-top: 0.75rem;
+}
+.flex-mobile {
+  display: flex;
+  flex-direction: column;
+}
+.socials,
+.socials-mobile .icon {
   font-size: 1.2rem;
 }
 .flex {

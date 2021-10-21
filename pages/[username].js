@@ -16,7 +16,7 @@ import Followers from "../components/Profile/Followers";
 import Following from "../components/Profile/Following";
 import { UpdateProfile } from "../components/Profile/UpdateProfile";
 import ProfileSettings from "../components/Profile/ProfileSettings";
-
+import { Media } from "../utils/Media.tsx";
 const ProfilePage = ({
   errorLoading,
   profile,
@@ -89,24 +89,52 @@ const ProfilePage = ({
     );
   return (
     <div>
-      <ProfileHeader
-        profile={profile}
-        isFollowing={isFollowing}
-        loading={loading}
-        user={user}
-        setUserFollowStats={setLoggedUserFollowStats}
-      />
+      <Media greaterThanOrEqual="tab">
+        <ProfileHeader
+          profile={profile}
+          isFollowing={isFollowing}
+          loading={loading}
+          user={user}
+          setUserFollowStats={setLoggedUserFollowStats}
+          mobile={false}
+        />
+      </Media>
+      <Media lessThan="tab">
+        <ProfileHeader
+          profile={profile}
+          isFollowing={isFollowing}
+          loading={loading}
+          user={user}
+          setUserFollowStats={setLoggedUserFollowStats}
+          mobile={true}
+        />
+      </Media>
+
       <Grid stackable>
         <Grid.Row>
           <Grid.Column>
-            <ProfileMenuTabs
-              activeItem={activeItem}
-              handleItemClick={handleItemClick}
-              followersLength={followersLength}
-              followingLength={followingLength}
-              ownAccount={ownAccount}
-              loggedUserFollowStats={loggedUserFollowStats}
-            />
+            <Media greaterThanOrEqual="tab">
+              <ProfileMenuTabs
+                activeItem={activeItem}
+                handleItemClick={handleItemClick}
+                followersLength={followersLength}
+                followingLength={followingLength}
+                ownAccount={ownAccount}
+                loggedUserFollowStats={loggedUserFollowStats}
+                mobile={false}
+              />
+            </Media>
+            <Media lessThan="tab">
+              <ProfileMenuTabs
+                activeItem={activeItem}
+                handleItemClick={handleItemClick}
+                followersLength={followersLength}
+                followingLength={followingLength}
+                ownAccount={ownAccount}
+                loggedUserFollowStats={loggedUserFollowStats}
+                mobile={true}
+              />
+            </Media>
           </Grid.Column>
         </Grid.Row>
 
@@ -152,7 +180,20 @@ const ProfilePage = ({
             )}
             {activeItem === "update" && <UpdateProfile Profile={profile} />}
             {activeItem === "settings" && (
-              <ProfileSettings newMessagePopup={user.newMessagePopup} />
+              <>
+                <Media greaterThanOrEqual="tab">
+                  <ProfileSettings
+                    newMessagePopup={user.newMessagePopup}
+                    mobile={false}
+                  />
+                </Media>
+                <Media lessThan="tab">
+                  <ProfileSettings
+                    newMessagePopup={user.newMessagePopup}
+                    mobile={true}
+                  />
+                </Media>
+              </>
             )}
           </Grid.Column>
         </Grid.Row>

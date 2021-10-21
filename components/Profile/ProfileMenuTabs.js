@@ -1,5 +1,5 @@
 import React from "react";
-import { Label, Menu } from "semantic-ui-react";
+import { Dropdown, Icon, Label, Menu } from "semantic-ui-react";
 import styles from "./Profile.module.css";
 
 const ProfileMenuTabs = ({
@@ -9,6 +9,7 @@ const ProfileMenuTabs = ({
   followingLength,
   ownAccount,
   loggedUserFollowStats,
+  mobile,
 }) => {
   console.log({ loggedUserFollowStats, ownAccount });
 
@@ -39,84 +40,153 @@ const ProfileMenuTabs = ({
       }}
     >
       <Menu.Item
-        name="posts"
-        icon="file alternate"
+        name={mobile ? "" : "Posts"}
+        icon={{
+          name: "file alternate",
+          size: mobile ? "large" : "",
+        }}
         active={activeItem === "posts"}
         onClick={() => handleItemClick("posts")}
         className={styles["menu-tab-item"]}
         style={{ marginLeft: "5px !important" }}
       />
 
-      {ownAccount ? (
+      {!mobile && (
         <>
-          <Menu.Item
-            active={activeItem === "followers"}
-            onClick={() => handleItemClick("followers")}
-            className={styles["menu-tab-item"]}
-            style={{ marginLeft: "5px !important" }}
-          >
-            Followers
-            <Label size="mini" className={styles["menu-tab-label"]}>
-              {getFollowers()}
-            </Label>
-          </Menu.Item>
-          <Menu.Item
-            active={activeItem === "following"}
-            onClick={() => handleItemClick("following")}
-            className={styles["menu-tab-item"]}
-            style={{ marginLeft: "5px !important" }}
-          >
-            Following
-            <Label size="mini" className={styles["menu-tab-label"]}>
-              {getFollowing()}
-            </Label>
-          </Menu.Item>
-        </>
-      ) : (
-        <>
-          <Menu.Item
-            active={activeItem === "followers"}
-            onClick={() => handleItemClick("followers")}
-            className={styles["menu-tab-item"]}
-            style={{ marginLeft: "5px !important" }}
-          >
-            Followers
-            <Label size="mini" className={styles["menu-tab-label"]}>
-              {followersLength}
-            </Label>
-          </Menu.Item>
-          <Menu.Item
-            active={activeItem === "following"}
-            onClick={() => handleItemClick("following")}
-            className={styles["menu-tab-item"]}
-            style={{ marginLeft: "5px !important" }}
-          >
-            Following
-            <Label size="mini" className={styles["menu-tab-label"]}>
-              {followingLength}
-            </Label>
-          </Menu.Item>
+          {ownAccount ? (
+            <>
+              <Menu.Item
+                active={activeItem === "followers"}
+                onClick={() => handleItemClick("followers")}
+                className={styles["menu-tab-item"]}
+                style={{ marginLeft: "5px !important" }}
+              >
+                Followers
+                <Label size="mini" className={styles["menu-tab-label"]}>
+                  {getFollowers()}
+                </Label>
+              </Menu.Item>
+              <Menu.Item
+                active={activeItem === "following"}
+                onClick={() => handleItemClick("following")}
+                className={styles["menu-tab-item"]}
+                style={{ marginLeft: "5px !important" }}
+              >
+                Following
+                <Label size="mini" className={styles["menu-tab-label"]}>
+                  {getFollowing()}
+                </Label>
+              </Menu.Item>
+            </>
+          ) : (
+            <>
+              <Menu.Item
+                active={activeItem === "followers"}
+                onClick={() => handleItemClick("followers")}
+                className={styles["menu-tab-item"]}
+                style={{ marginLeft: "5px !important" }}
+              >
+                Followers
+                <Label size="mini" className={styles["menu-tab-label"]}>
+                  {followersLength}
+                </Label>
+              </Menu.Item>
+              <Menu.Item
+                active={activeItem === "following"}
+                onClick={() => handleItemClick("following")}
+                className={styles["menu-tab-item"]}
+                style={{ marginLeft: "5px !important" }}
+              >
+                {!mobile && "Following"}
+                <Label size="mini" className={styles["menu-tab-label"]}>
+                  {followingLength}
+                </Label>
+              </Menu.Item>
+            </>
+          )}
         </>
       )}
 
       {ownAccount && (
         <>
           <Menu.Item
-            icon="pencil alternate"
-            name="Update"
+            icon={{
+              name: "pencil alternate",
+              size: mobile ? "large" : "",
+            }}
+            name={mobile ? "" : "Update"}
             active={activeItem === "update"}
             onClick={() => handleItemClick("update")}
             className={styles["menu-tab-item"]}
             style={{ marginLeft: "5px !important" }}
           />
           <Menu.Item
-            icon="setting alternate"
-            name="Settings"
+            icon={{
+              name: "setting alternate",
+              size: mobile ? "large" : "",
+            }}
+            name={mobile ? "" : "Settings"}
             active={activeItem === "settings"}
             onClick={() => handleItemClick("settings")}
             className={styles["menu-tab-item"]}
             style={{ marginLeft: "5px !important" }}
           />
+        </>
+      )}
+
+      {mobile && (
+        <>
+          {ownAccount ? (
+            <Menu.Item
+              active={activeItem === "followers" || activeItem === "following"}
+              className={styles["menu-tab-item"]}
+              style={{ marginLeft: "5px !important" }}
+            >
+              <Icon name="options" size="large" />
+              <Dropdown text="" floating labeled button>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => handleItemClick("followers")}>
+                    Followers
+                    <Label size="mini" className={styles["menu-tab-label"]}>
+                      {getFollowers()}
+                    </Label>
+                  </Dropdown.Item>
+
+                  <Dropdown.Item onClick={() => handleItemClick("following")}>
+                    Following
+                    <Label size="mini" className={styles["menu-tab-label"]}>
+                      {getFollowing()}
+                    </Label>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </Menu.Item>
+          ) : (
+            <Menu.Item
+              active={activeItem === "followers" || activeItem === "following"}
+              className={styles["menu-tab-item"]}
+              style={{ marginLeft: "5px !important" }}
+            >
+              <Icon name="options" size="large" />
+              <Dropdown text="" floating labeled button>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => handleItemClick("followers")}>
+                    Followers
+                    <Label size="mini" className={styles["menu-tab-label"]}>
+                      {followersLength}
+                    </Label>
+                  </Dropdown.Item>
+
+                  <Dropdown.Item onClick={() => handleItemClick("following")}>
+                    Following
+                    <Label size="mini" className={styles["menu-tab-label"]}>
+                      {followingLength}
+                    </Label>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </Menu.Item>
+          )}
         </>
       )}
     </Menu>
